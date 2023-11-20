@@ -148,6 +148,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="部门简介" prop="intro">
+              <el-input v-model="form.intro" placeholder="输入部门介绍" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -228,6 +235,7 @@ export default {
       this.loading = true;
       listDept(this.queryParams).then(response => {
         this.deptList = this.handleTree(response.data, "deptId");
+        console.log(response.data)
         this.loading = false;
       });
     },
@@ -257,7 +265,8 @@ export default {
         leader: undefined,
         phone: undefined,
         email: undefined,
-        status: "0"
+        status: "0",
+        intro: undefined
       };
       this.resetForm("form");
     },
