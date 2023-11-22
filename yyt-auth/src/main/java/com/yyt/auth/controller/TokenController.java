@@ -33,15 +33,21 @@ public class TokenController {
 
   @PostMapping("login")
   public R<?> login(@RequestBody LoginBody form) {
-    LoginUser userInfo = null;
-    if (form.getCode().isEmpty()) {
-
-    }else {
-      // 用户登录
-      userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
-    }
+    // 用户登录
+    LoginUser userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
     // 获取登录token
     return R.ok(tokenService.createToken(userInfo));
+  }
+
+  @PostMapping("/wx/login")
+  public R<?> wxLogin(@RequestBody LoginBody form) {
+    if (!form.getCode().isEmpty()) {
+      // 先判断openId存不存在
+      LoginUser userInfo = sysLoginService.wxLogin(form.getCode());
+      // 获取登录token
+      return R.ok(tokenService.createToken(userInfo));
+    }
+    return R.fail("登录失败");
   }
 
   @DeleteMapping("logout")

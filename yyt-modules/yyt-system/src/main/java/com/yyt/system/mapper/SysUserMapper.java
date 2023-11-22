@@ -125,5 +125,5 @@ public interface SysUserMapper {
    */
   public SysUser checkEmailUnique(String email);
 
-  int selectUserByOpenId(String openId);
+  SysUser selectUserByOpenId(String openId);
 }

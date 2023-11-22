@@ -41,7 +41,11 @@ public class SysLoginService {
     if (StringUtils.isEmpty(code)) {
       throw new ServiceException("微信授权码不能为空");
     }
-    return null;
+    R<LoginUser> sysUser = remoteUserService.selectUserByOpenId(code, SecurityConstants.INNER);
+    if (StringUtils.isNull(sysUser) || StringUtils.isNull(sysUser.getData())) {
+      throw new ServiceException("登录用户不存在");
+    }
+    return sysUser.getData();
   }
 
   /**

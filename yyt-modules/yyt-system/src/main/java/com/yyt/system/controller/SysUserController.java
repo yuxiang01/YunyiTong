@@ -114,14 +114,7 @@ public class SysUserController extends BaseController {
       return R.fail("用户名或密码错误");
     }
     // 角色集合
-    Set<String> roles = permissionService.getRolePermission(sysUser);
-    // 权限集合
-    Set<String> permissions = permissionService.getMenuPermission(sysUser);
-    LoginUser sysUserVo = new LoginUser();
-    sysUserVo.setSysUser(sysUser);
-    sysUserVo.setRoles(roles);
-    sysUserVo.setPermissions(permissions);
-    return R.ok(sysUserVo);
+    return getLoginUserR(sysUser);
   }
 
   /**
@@ -293,8 +286,22 @@ public class SysUserController extends BaseController {
     return success(deptService.selectDeptTreeList(dept));
   }
 
-  @PostMapping("/code")
-  public AjaxResult selectUserByOpenId(String code) {
-    return userService.selectUserByOpenId(code) ? success() : error();
+  @PostMapping("/code/{code}")
+  public R<LoginUser> selectUserByOpenId(@PathVariable String code) {
+    SysUser sysUser = userService.selectUserByOpenId(code);
+    if (StringUtils.isNull(sysUser)) {
+      return R.fail("该用户不存在");
+    }
+    return getLoginUserR(sysUser);
+  }
+
+  private R<LoginUser> getLoginUserR(SysUser sysUser) {
+    Set<String> roles = permissionService.getRolePermission(sysUser);
+    Set<String> permissions = permissionService.getMenuPermission(sysUser);
+    LoginUser loginUser = new LoginUser();
+    loginUser.setSysUser(sysUser);
+    loginUser.setRoles(roles);
+    loginUser.setPermissions(permissions);
+    return R.ok(loginUser);
   }
 }

@@ -39,4 +39,14 @@ public interface RemoteUserService {
    */
   @PostMapping("/user/register")
   public R<Boolean> registerUserInfo(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+  /**
+   * 查询是否存在该用户
+   *
+   * @param code   临时授权码
+   * @param source 请求来源
+   * @return true/false
+   */
+  @PostMapping("/user/code/{code}")
+  R<LoginUser> selectUserByOpenId(@PathVariable("code") String code, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

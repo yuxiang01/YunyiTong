@@ -497,9 +497,8 @@ public class SysUserServiceImpl implements ISysUserService {
   }
 
   @Override
-  public boolean selectUserByOpenId(String code) {
-    System.out.println("appId = " + appId + ",appSecret =" +appSecret);
-    return userMapper.selectUserByOpenId(code) > 0;
+  public SysUser selectUserByOpenId(String code) {
+    return userMapper.selectUserByOpenId(getOpenId(code));
   }
 
   private String getOpenId(String code) {

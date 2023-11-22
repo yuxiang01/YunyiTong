@@ -210,5 +210,5 @@ public interface ISysUserService {
    * @param code openId
    * @return true/false
    */
-  boolean selectUserByOpenId(String code);
+  SysUser selectUserByOpenId(String code);
 }
