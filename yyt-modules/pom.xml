@@ -13,6 +13,7 @@
         <module>yyt-gen</module>
         <module>yyt-job</module>
         <module>yyt-file</module>
+        <module>yyt-reg</module>
     </modules>
 
     <artifactId>yyt-modules</artifactId>
