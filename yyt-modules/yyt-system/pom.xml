@@ -78,6 +78,12 @@
             <artifactId>yyt-common-swagger</artifactId>
         </dependency>
 
+        <!-- 通用工具类-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.5</version>
+        </dependency>
     </dependencies>
 
     <build>

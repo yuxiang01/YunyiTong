@@ -1,16 +1,8 @@
 package com.yyt.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Validator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.yyt.common.core.constant.UserConstants;
 import com.yyt.common.core.exception.ServiceException;
 import com.yyt.common.core.utils.SpringUtils;
@@ -23,13 +15,22 @@ import com.yyt.system.api.domain.SysUser;
 import com.yyt.system.domain.SysPost;
 import com.yyt.system.domain.SysUserPost;
 import com.yyt.system.domain.SysUserRole;
-import com.yyt.system.mapper.SysPostMapper;
-import com.yyt.system.mapper.SysRoleMapper;
-import com.yyt.system.mapper.SysUserMapper;
-import com.yyt.system.mapper.SysUserPostMapper;
-import com.yyt.system.mapper.SysUserRoleMapper;
+import com.yyt.system.mapper.*;
 import com.yyt.system.service.ISysConfigService;
 import com.yyt.system.service.ISysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.validation.Validator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户 业务层处理
@@ -60,6 +61,12 @@ public class SysUserServiceImpl implements ISysUserService {
 
   @Autowired
   protected Validator validator;
+
+  @Value("${wx.app-id}")
+  private String appId;
+
+  @Value("${wx.app-secret}")
+  private String appSecret;
 
   /**
    * 根据条件分页查询用户列表
@@ -491,6 +498,24 @@ public class SysUserServiceImpl implements ISysUserService {
 
   @Override
   public boolean selectUserByOpenId(String code) {
+    System.out.println("appId = " + appId + ",appSecret =" +appSecret);
     return userMapper.selectUserByOpenId(code) > 0;
   }
+
+  private String getOpenId(String code) {
+    String url = "https://api.weixin.qq.com/sns/jscode2session";
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("appid", appId);
+    map.put("secret", appSecret);
+    map.put("js_code", code);
+    map.put("grant_type", "authorization_code");
+    String response = HttpUtil.post(url, map);
+    JSONObject json = JSONUtil.parseObj(response);
+    String openId = json.getStr("openid");
+    if (openId == null || openId.length() == 0) {
+      throw new RuntimeException("临时登录凭证错误");
+    }
+    return openId;
+  }
+
 }
