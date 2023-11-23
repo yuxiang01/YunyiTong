@@ -2,6 +2,7 @@ package com.yyt.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.yyt.system.api.model.RegisterWxUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,17 +40,6 @@ public class TokenController {
     return R.ok(tokenService.createToken(userInfo));
   }
 
-  @PostMapping("/wx/login")
-  public R<?> wxLogin(@RequestBody LoginBody form) {
-    if (!form.getCode().isEmpty()) {
-      // 先判断openId存不存在
-      LoginUser userInfo = sysLoginService.wxLogin(form.getCode());
-      // 获取登录token
-      return R.ok(tokenService.createToken(userInfo));
-    }
-    return R.fail("登录失败");
-  }
-
   @DeleteMapping("logout")
   public R<?> logout(HttpServletRequest request) {
     String token = SecurityUtils.getToken(request);
@@ -79,5 +69,24 @@ public class TokenController {
     // 用户注册
     sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
     return R.ok();
+  }
+
+  @PostMapping("/wx/login")
+  public R<?> wxLogin(@RequestBody LoginBody form) {
+    if (!form.getCode().isEmpty()) {
+      // 先判断openId存不存在
+      LoginUser userInfo = sysLoginService.wxLogin(form.getCode());
+      // 获取登录token
+      return R.ok(tokenService.createToken(userInfo));
+    }
+    return R.fail("登录失败");
+  }
+
+  @PostMapping("/wx/register")
+  public R<?> wxRegister(@RequestBody RegisterWxUser wxUser) {
+    System.out.println("wxUser = " + wxUser);
+    // 用户注册
+    LoginUser loginUser = sysLoginService.wxRegister(wxUser);
+    return R.ok(tokenService.createToken(loginUser));
   }
 }

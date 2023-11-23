@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yyt.system.api.model.RegisterWxUser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -293,6 +294,12 @@ public class SysUserController extends BaseController {
       return R.fail("该用户不存在");
     }
     return getLoginUserR(sysUser);
+  }
+
+  @PostMapping("/wx/register")
+  R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {
+    System.out.println("wxUser = " + wxUser);
+    return null;
   }
 
   private R<LoginUser> getLoginUserR(SysUser sysUser) {

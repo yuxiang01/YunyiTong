@@ -1,5 +1,6 @@
 package com.yyt.system.api.factory;
 
+import com.yyt.system.api.model.RegisterWxUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -34,7 +35,12 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
 
       @Override
       public R<LoginUser> selectUserByOpenId(String code, String source) {
-        return R.fail("该用户不存在");
+        return R.fail("该用户不存在: " + throwable.getMessage());
+      }
+
+      @Override
+      public R<LoginUser> wxRegister(RegisterWxUser wxUser, String source) {
+        return R.fail("注册用户失败:" + throwable.getMessage());
       }
     };
   }

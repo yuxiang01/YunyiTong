@@ -1,5 +1,6 @@
 package com.yyt.system.api;
 
+import com.yyt.system.api.model.RegisterWxUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,8 +46,18 @@ public interface RemoteUserService {
    *
    * @param code   临时授权码
    * @param source 请求来源
-   * @return true/false
+   * @return user
    */
   @PostMapping("/user/code/{code}")
   R<LoginUser> selectUserByOpenId(@PathVariable("code") String code, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+  /**
+   * 微信用户注册
+   *
+   * @param wxUser 微信用户注册form
+   * @param source 来源
+   * @return true/false
+   */
+  @PostMapping("/user/wx/register")
+  R<LoginUser> wxRegister(RegisterWxUser wxUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
