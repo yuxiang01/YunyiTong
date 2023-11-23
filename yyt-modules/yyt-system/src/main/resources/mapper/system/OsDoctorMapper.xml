@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.system.mapper.OsDoctorMapper">
+
+  <resultMap type="OsDoctor" id="OsDoctorResult">
+    <result property="doctorId" column="doctor_id"/>
+    <result property="deptId" column="dept_id"/>
+    <result property="name" column="name"/>
+    <result property="password" column="password"/>
+    <result property="phone" column="phone"/>
+    <result property="sex" column="sex"/>
+    <result property="position" column="position"/>
+    <result property="age" column="age"/>
+    <result property="cost" column="cost"/>
+    <result property="status" column="status"/>
+    <result property="regNumber" column="reg_number"/>
+    <result property="regPerHour" column="reg_per_hour"/>
+    <result property="intro" column="intro"/>
+    <result property="areasOfExpertise" column="areas_of_expertise"/>
+    <result property="dutyInfo" column="duty_info"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="postName" column="post_name"/>
+    <result property="deptName" column="dept_name"/>
+  </resultMap>
+
+  <sql id="selectOsDoctorVo">
+    SELECT doctor_id,
+           u.dept_id,
+           u.name,
+           u.password,
+           u.phone,
+           u.sex,
+           u.position,
+           u.age,
+           u.cost,
+           u.status,
+           u.reg_number,
+           u.reg_per_hour,
+           u.intro,
+           u.areas_of_expertise,
+           u.duty_info,
+           u.create_by,
+           u.create_time,
+           u.update_by,
+           u.update_time,
+           post_name,
+           dept_name
+    FROM os_doctor u
+           LEFT JOIN sys_post p ON u.position = p.post_id
+           LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+  </sql>
+
+  <select id="selectOsDoctorList" parameterType="OsDoctor" resultMap="OsDoctorResult">
+    <include refid="selectOsDoctorVo"/>
+    <where>
+      <if test="deptId != null ">and u.dept_id = #{deptId}</if>
+      <if test="name != null  and name != ''">and u.name like concat('%', #{name}, '%')</if>
+      <if test="phone != null  and phone != ''">and u.phone = #{phone}</if>
+      <if test="sex != null  and sex != ''">and u.sex = #{sex}</if>
+      <if test="position != null  and position != ''">and u.position = #{position}</if>
+      <if test="cost != null ">and cost = #{cost}</if>
+      <if test="status != null  and status != ''">and u.status = #{status}</if>
+    </where>
+  </select>
+
+  <select id="selectOsDoctorByDoctorId" parameterType="Long" resultMap="OsDoctorResult">
+    <include refid="selectOsDoctorVo"/>
+    where doctor_id = #{doctorId}
+  </select>
+
+  <insert id="insertOsDoctor" parameterType="OsDoctor" useGeneratedKeys="true" keyProperty="doctorId">
+    insert into os_doctor
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="deptId != null">dept_id,</if>
+      <if test="name != null and name != ''">name,</if>
+      <if test="password != null and password != ''">password,</if>
+      <if test="phone != null and phone != ''">phone,</if>
+      <if test="sex != null and sex != ''">sex,</if>
+      <if test="position != null and position != ''">position,</if>
+      <if test="age != null">age,</if>
+      <if test="cost != null">cost,</if>
+      <if test="status != null">status,</if>
+      <if test="regNumber != null">reg_number,</if>
+      <if test="regPerHour != null">reg_per_hour,</if>
+      <if test="intro != null and intro != ''">intro,</if>
+      <if test="areasOfExpertise != null and areasOfExpertise != ''">areas_of_expertise,</if>
+      <if test="dutyInfo != null and dutyInfo != ''">duty_info,</if>
+      <if test="createBy != null and createBy != ''">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null and updateBy != ''">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="deptId != null">#{deptId},</if>
+      <if test="name != null and name != ''">#{name},</if>
+      <if test="password != null and password != ''">#{password},</if>
+      <if test="phone != null and phone != ''">#{phone},</if>
+      <if test="sex != null and sex != ''">#{sex},</if>
+      <if test="position != null and position != ''">#{position},</if>
+      <if test="age != null">#{age},</if>
+      <if test="cost != null">#{cost},</if>
+      <if test="status != null">#{status},</if>
+      <if test="regNumber != null">#{regNumber},</if>
+      <if test="regPerHour != null">#{regPerHour},</if>
+      <if test="intro != null and intro != ''">#{intro},</if>
+      <if test="areasOfExpertise != null and areasOfExpertise != ''">#{areasOfExpertise},</if>
+      <if test="dutyInfo != null and dutyInfo != ''">#{dutyInfo},</if>
+      <if test="createBy != null and createBy != ''">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateOsDoctor" parameterType="OsDoctor">
+    update os_doctor
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="deptId != null">dept_id = #{deptId},</if>
+      <if test="name != null and name != ''">name = #{name},</if>
+      <if test="password != null and password != ''">password = #{password},</if>
+      <if test="phone != null and phone != ''">phone = #{phone},</if>
+      <if test="sex != null and sex != ''">sex = #{sex},</if>
+      <if test="position != null and position != ''">position = #{position},</if>
+      <if test="age != null">age = #{age},</if>
+      <if test="cost != null">cost = #{cost},</if>
+      <if test="status != null">status = #{status},</if>
+      <if test="regNumber != null">reg_number = #{regNumber},</if>
+      <if test="regPerHour != null">reg_per_hour = #{regPerHour},</if>
+      <if test="intro != null and intro != ''">intro = #{intro},</if>
+      <if test="areasOfExpertise != null and areasOfExpertise != ''">areas_of_expertise = #{areasOfExpertise},</if>
+      <if test="dutyInfo != null and dutyInfo != ''">duty_info = #{dutyInfo},</if>
+      <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where doctor_id = #{doctorId}
+  </update>
+
+  <delete id="deleteOsDoctorByDoctorId" parameterType="Long">
+    delete
+    from os_doctor
+    where doctor_id = #{doctorId}
+  </delete>
+
+  <delete id="deleteOsDoctorByDoctorIds" parameterType="String">
+    delete from os_doctor where doctor_id in
+    <foreach item="doctorId" collection="array" open="(" separator="," close=")">
+      #{doctorId}
+    </foreach>
+  </delete>
+</mapper>
