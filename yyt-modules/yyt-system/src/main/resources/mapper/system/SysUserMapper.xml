@@ -186,6 +186,7 @@
     WHERE open_id = #{openId}
   </select>
 
+
   <insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
     insert into sys_user(
     <if test="userId != null and userId != 0">user_id,</if>
@@ -200,6 +201,7 @@
     <if test="status != null and status != ''">status,</if>
     <if test="createBy != null and createBy != ''">create_by,</if>
     <if test="remark != null and remark != ''">remark,</if>
+    <if test="openId != null and openId != ''">open_id,</if>
     create_time
     )values(
     <if test="userId != null and userId != ''">#{userId},</if>
@@ -214,6 +216,7 @@
     <if test="status != null and status != ''">#{status},</if>
     <if test="createBy != null and createBy != ''">#{createBy},</if>
     <if test="remark != null and remark != ''">#{remark},</if>
+    <if test="openId != null and openId != ''">#{openId},</if>
     sysdate()
     )
   </insert>
@@ -270,4 +273,13 @@
     </foreach>
   </delete>
 
-</mapper> 
+
+  <select id="checkOpenId" resultType="com.yyt.system.api.domain.SysUser">
+    select * from sys_user where open_id=#{openId}
+  </select>
+  <select id="checkPhone" resultType="java.lang.Boolean">
+    select if(count(*), true, false) from sys_user where phonenumber=#{phone}
+  </select>
+
+
+</mapper>

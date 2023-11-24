@@ -126,4 +126,9 @@ public interface SysUserMapper {
   public SysUser checkEmailUnique(String email);
 
   SysUser selectUserByOpenId(String openId);
+
+   SysUser checkOpenId(String openId);
+
+  boolean checkPhone(String code);
+
 }

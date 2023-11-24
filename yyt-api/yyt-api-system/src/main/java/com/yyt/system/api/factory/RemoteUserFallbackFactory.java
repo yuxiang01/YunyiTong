@@ -42,6 +42,11 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
       public R<LoginUser> wxRegister(RegisterWxUser wxUser, String source) {
         return R.fail("注册用户失败:" + throwable.getMessage());
       }
+
+      @Override
+      public R<String> sendCode(String phone, String source) {
+        return R.fail("发送验证码失败:" + throwable.getMessage());
+      }
     };
   }
 }

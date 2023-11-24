@@ -144,4 +144,12 @@ public class SysLoginService {
     }
     return wxRegister.getData();
   }
+
+  public String sendCode(String phone) {
+    R<String> stringR = remoteUserService.sendCode(phone, SecurityConstants.INNER);
+    if (R.FAIL==stringR.getCode()) {
+      throw new ServiceException(stringR.getMsg());
+    }
+    return stringR.getData();
+  }
 }

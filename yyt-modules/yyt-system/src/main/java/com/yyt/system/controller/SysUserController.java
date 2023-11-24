@@ -296,12 +296,6 @@ public class SysUserController extends BaseController {
     return getLoginUserR(sysUser);
   }
 
-  @PostMapping("/wx/register")
-  R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {
-    System.out.println("wxUser = " + wxUser);
-    return null;
-  }
-
   private R<LoginUser> getLoginUserR(SysUser sysUser) {
     Set<String> roles = permissionService.getRolePermission(sysUser);
     Set<String> permissions = permissionService.getMenuPermission(sysUser);
@@ -311,4 +305,20 @@ public class SysUserController extends BaseController {
     loginUser.setPermissions(permissions);
     return R.ok(loginUser);
   }
+  //注册
+  @PostMapping("/wx/register")
+  R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {
+    SysUser user = userService.register(wxUser);
+    if (StringUtils.isNull(user)) {
+      return R.fail("注册失败");
+    }
+    return getLoginUserR(user);
+  }
+
+  //发送验证码
+  @PostMapping("/sendCode/{phone}")
+  R<String> sendCode(@PathVariable String phone){
+   return R.ok(userService.sendCode(phone));
+  }
+
 }

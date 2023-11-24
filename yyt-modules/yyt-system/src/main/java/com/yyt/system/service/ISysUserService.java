@@ -3,6 +3,7 @@ package com.yyt.system.service;
 import java.util.List;
 
 import com.yyt.system.api.domain.SysUser;
+import com.yyt.system.api.model.RegisterWxUser;
 
 /**
  * 用户 业务层
@@ -211,4 +212,8 @@ public interface ISysUserService {
    * @return true/false
    */
   SysUser selectUserByOpenId(String code);
+
+  SysUser register(RegisterWxUser user);
+
+  String sendCode(String phone);
 }

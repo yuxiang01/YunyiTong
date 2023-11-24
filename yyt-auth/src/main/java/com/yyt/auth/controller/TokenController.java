@@ -89,4 +89,9 @@ public class TokenController {
     LoginUser loginUser = sysLoginService.wxRegister(wxUser);
     return R.ok(tokenService.createToken(loginUser));
   }
+
+  @PostMapping("/sendCode")
+  R<String> sendCode(@RequestBody String phone){
+    return R.ok(sysLoginService.sendCode(phone));
+  }
 }
