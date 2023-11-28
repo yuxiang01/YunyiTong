@@ -1,8 +1,10 @@
 package com.yyt.reg.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +26,13 @@ import com.yyt.common.core.web.page.TableDataInfo;
 
 /**
  * 医院Controller
- * 
+ *
  * @author yyt
  * @date 2023-11-22
  */
 @RestController
 @RequestMapping("/hospital")
-public class RegHospitalController extends BaseController
-{
+public class RegHospitalController extends BaseController {
     @Autowired
     private IRegHospitalService regHospitalService;
 
@@ -40,8 +41,7 @@ public class RegHospitalController extends BaseController
      */
 //    @RequiresPermissions("reg:hospital:list")
     @GetMapping("/list")
-    public TableDataInfo list(RegHospital regHospital)
-    {
+    public TableDataInfo list(RegHospital regHospital) {
         startPage();
         List<RegHospital> list = regHospitalService.selectRegHospitalList(regHospital);
         return getDataTable(list);
@@ -53,8 +53,7 @@ public class RegHospitalController extends BaseController
     @RequiresPermissions("reg:hospital:export")
     @Log(title = "医院", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, RegHospital regHospital)
-    {
+    public void export(HttpServletResponse response, RegHospital regHospital) {
         List<RegHospital> list = regHospitalService.selectRegHospitalList(regHospital);
         ExcelUtil<RegHospital> util = new ExcelUtil<RegHospital>(RegHospital.class);
         util.exportExcel(response, list, "医院数据");
@@ -65,8 +64,7 @@ public class RegHospitalController extends BaseController
      */
     @RequiresPermissions("reg:hospital:query")
     @GetMapping(value = "/{hospitalId}")
-    public AjaxResult getInfo(@PathVariable("hospitalId") Long hospitalId)
-    {
+    public AjaxResult getInfo(@PathVariable("hospitalId") Long hospitalId) {
         return success(regHospitalService.selectRegHospitalByHospitalId(hospitalId));
     }
 
@@ -76,8 +74,7 @@ public class RegHospitalController extends BaseController
     @RequiresPermissions("reg:hospital:add")
     @Log(title = "医院", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody RegHospital regHospital)
-    {
+    public AjaxResult add(@RequestBody RegHospital regHospital) {
         return toAjax(regHospitalService.insertRegHospital(regHospital));
     }
 
@@ -87,8 +84,7 @@ public class RegHospitalController extends BaseController
     @RequiresPermissions("reg:hospital:edit")
     @Log(title = "医院", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody RegHospital regHospital)
-    {
+    public AjaxResult edit(@RequestBody RegHospital regHospital) {
         return toAjax(regHospitalService.updateRegHospital(regHospital));
     }
 
@@ -97,9 +93,27 @@ public class RegHospitalController extends BaseController
      */
     @RequiresPermissions("reg:hospital:remove")
     @Log(title = "医院", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{hospitalIds}")
-    public AjaxResult remove(@PathVariable Long[] hospitalIds)
-    {
+    @DeleteMapping("/{hospitalIds}")
+    public AjaxResult remove(@PathVariable Long[] hospitalIds) {
         return toAjax(regHospitalService.deleteRegHospitalByHospitalIds(hospitalIds));
+    }
+
+    @GetMapping("/selAll")
+    public TableDataInfo list(String longitude, String latitude, String keywords) {
+        startPage();
+        List<HashMap> list = regHospitalService.selAll(longitude, latitude, keywords);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/selAllByProId")
+    public TableDataInfo selAllByProId(String id, String longitude, String latitude, String tagId) {
+        List<HashMap> list = regHospitalService.selAllByProId(id, longitude, latitude, tagId);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/selAllByCityId")
+    public TableDataInfo selAllByCityId(String id, String longitude, String latitude, String tagId) {
+        List<HashMap> list = regHospitalService.selAllByCityId(id, longitude, latitude, tagId);
+        return getDataTable(list);
     }
 }

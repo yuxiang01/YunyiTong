@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yyt.reg.mapper.RegHospitalMapper">
-    
+
     <resultMap type="RegHospital" id="RegHospitalResult">
         <result property="hospitalId"    column="hospital_id"    />
         <result property="addressId"    column="address_id"    />
@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectRegHospitalList" parameterType="RegHospital" resultMap="RegHospitalResult">
         <include refid="selectRegHospitalVo"/>
-        <where>  
+        <where>
             <if test="addressId != null "> and address_id = #{addressId}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="tagId != null  and tagId != ''"> and tag_id = #{tagId}</if>
@@ -29,12 +29,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
         </where>
     </select>
-    
+
     <select id="selectRegHospitalByHospitalId" parameterType="Long" resultMap="RegHospitalResult">
         <include refid="selectRegHospitalVo"/>
         where hospital_id = #{hospitalId}
     </select>
-        
+
     <insert id="insertRegHospital" parameterType="RegHospital" useGeneratedKeys="true" keyProperty="hospitalId">
         insert into reg_hospital
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -76,9 +76,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteRegHospitalByHospitalIds" parameterType="String">
-        delete from reg_hospital where hospital_id in 
+        delete from reg_hospital where hospital_id in
         <foreach item="hospitalId" collection="array" open="(" separator="," close=")">
             #{hospitalId}
         </foreach>
     </delete>
+
+    <select id="selAll" resultType="HashMap" parameterType="String">
+        select hospital_id,address_id,name,tag_id,position,remark from reg_hospital
+        <where>
+            <if test="name != null and name != ''">
+                name like CONCAT('%',#{keywords},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selAllByProId" resultType="HashMap" parameterType="String">
+        select hospital_id,address_id,name,tag_id,position,remark from reg_hospital
+        <where>
+            <if test="param1 != null and param1 != 0">
+                address_id in
+                (select address_id from sys_address where super_id in
+                (select address_id from sys_address where super_id = #{param1}))
+            </if>
+            <if test="param2 != 0">
+                and tag_id like CONCAT('%',#{param2},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selAllByCityId" resultType="HashMap" parameterType="String">
+        select hospital_id,address_id,name,tag_id,position,remark from reg_hospital
+        <where>
+            <if test="param1 != null and param1 != 0">
+                address_id in (select address_id from sys_address where super_id = #{param1})
+            </if>
+            <if test="param2 != 0">
+                and tag_id like CONCAT('%',#{param2},'%')
+            </if>
+        </where>
+    </select>
 </mapper>
