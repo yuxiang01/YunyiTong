@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.SysPatientMapper">
+    
+    <resultMap type="SysPatient" id="SysPatientResult">
+        <result property="patientId"    column="patient_id"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="phone"    column="phone"    />
+        <result property="card"    column="card"    />
+        <result property="address"    column="address"    />
+        <result property="detailsAddress"    column="details_address"    />
+        <result property="remark"    column="remark"    />
+        <result property="belongToUser"    column="belong_to_user"    />
+    </resultMap>
+
+    <sql id="selectSysPatientVo">
+        select patient_id, name, sex, age, phone, card, address, details_address, remark, belong_to_user from sys_patient
+    </sql>
+
+    <select id="selectSysPatientList" parameterType="SysPatient" resultMap="SysPatientResult">
+        <include refid="selectSysPatientVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSysPatientByPatientId" parameterType="Long" resultMap="SysPatientResult">
+        <include refid="selectSysPatientVo"/>
+        where patient_id = #{patientId}
+    </select>
+        
+    <insert id="insertSysPatient" parameterType="SysPatient" useGeneratedKeys="true" keyProperty="patientId">
+        insert into sys_patient
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="sex != null and sex != ''">sex,</if>
+            <if test="age != null">age,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="card != null and card != ''">card,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="detailsAddress != null and detailsAddress != ''">details_address,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="belongToUser != null">belong_to_user,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="sex != null and sex != ''">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="card != null and card != ''">#{card},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="detailsAddress != null and detailsAddress != ''">#{detailsAddress},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="belongToUser != null">#{belongToUser},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysPatient" parameterType="SysPatient">
+        update sys_patient
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="card != null and card != ''">card = #{card},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="detailsAddress != null and detailsAddress != ''">details_address = #{detailsAddress},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="belongToUser != null">belong_to_user = #{belongToUser},</if>
+        </trim>
+        where patient_id = #{patientId}
+    </update>
+
+    <delete id="deleteSysPatientByPatientId" parameterType="Long">
+        delete from sys_patient where patient_id = #{patientId}
+    </delete>
+
+    <delete id="deleteSysPatientByPatientIds" parameterType="String">
+        delete from sys_patient where patient_id in 
+        <foreach item="patientId" collection="array" open="(" separator="," close=")">
+            #{patientId}
+        </foreach>
+    </delete>
+</mapper>

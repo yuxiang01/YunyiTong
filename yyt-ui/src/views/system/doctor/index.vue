@@ -218,14 +218,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="科室" prop="deptId">
-          <el-select v-model="form.deptId" placeholder="请选择所属科室" clearable>
-            <el-option
-              v-for="dict in deptList"
-              :key="dict.deptId"
-              :label="dict.deptName"
-              :value="dict.deptId"
-            />
-          </el-select>
+          <treeselect v-model="form.deptId" :disable-branch-nodes="true" :options="deptList" :show-count="true"
+                      placeholder="请选择归属部门"/>
         </el-form-item>
         <el-form-item label="医生简介" prop="intro">
           <el-input v-model="form.intro" type="textarea" placeholder="请输入内容"/>
@@ -247,12 +241,16 @@
 
 <script>
 import {listDoctor, getDoctor, delDoctor, addDoctor, updateDoctor} from "@/api/system/doctor";
-import {listDept} from "@/api/system/dept";
 import {listPost} from "@/api/system/post";
+import {deptTreeSelect} from "@/api/system/user";
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+
 
 export default {
   name: "Doctor",
   dicts: ['sys_user_sex', 'sys_normal_disable'],
+  components: {Treeselect},
   data() {
     return {
       // 遮罩层
@@ -356,7 +354,7 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-      listDept().then(res => this.deptList = res.data)
+      deptTreeSelect().then(res => this.deptList = res.data)
       listPost().then(res => this.postList = res.rows)
     },
     // 取消按钮

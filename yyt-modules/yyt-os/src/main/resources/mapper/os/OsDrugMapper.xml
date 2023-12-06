@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsDrugMapper">
+  <resultMap type="OsDrug" id="OsDrugResult">
+    <result property="drugId" column="drug_id"/>
+    <result property="name" column="name"/>
+    <result property="specification" column="specification"/>
+    <result property="preType" column="pre_type"/>
+    <result property="purchasePrice" column="purchase_price"/>
+    <result property="drugPrice" column="drug_price"/>
+    <result property="status" column="status"/>
+    <result property="pinyinCode" column="pinyin_code"/>
+    <result property="drugType" column="drug_type"/>
+    <result property="drugDosageForm" column="drug_dosage_form"/>
+    <result property="isOtc" column="is_otc"/>
+    <result property="usage" column="usage"/>
+    <result property="dosage" column="dosage"/>
+    <result property="frequency" column="frequency"/>
+    <result property="remark" column="remark"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+  </resultMap>
+
+  <sql id="selectOsDrugVo">
+    select drug_id,
+           name,
+           specification,
+           pre_type,
+           purchase_price,
+           drug_price,
+           status,
+           pinyin_code,
+           drug_type,
+           drug_dosage_form,
+           is_otc, `usage`, dosage, frequency, remark, create_by, create_time, update_by, update_time
+    from os_drug
+  </sql>
+
+  <select id="selectOsDrugList" parameterType="OsDrug" resultMap="OsDrugResult">
+    <include refid="selectOsDrugVo"/>
+    <where>
+      <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+      <if test="preType != null ">and pre_type = #{preType}</if>
+      <if test="status != null  and status != ''">and status = #{status}</if>
+      <if test="drugType != null  and drugType != ''">and drug_type = #{drugType}</if>
+    </where>
+  </select>
+
+  <select id="selectOsDrugByDrugId" parameterType="Long" resultMap="OsDrugResult">
+    <include refid="selectOsDrugVo"/>
+    where drug_id = #{drugId}
+  </select>
+
+  <insert id="insertOsDrug" parameterType="OsDrug" useGeneratedKeys="true" keyProperty="drugId">
+    insert into os_drug
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">name,</if>
+      <if test="specification != null and specification != ''">specification,</if>
+      <if test="preType != null">pre_type,</if>
+      <if test="purchasePrice != null">purchase_price,</if>
+      <if test="drugPrice != null">drug_price,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="pinyinCode != null and pinyinCode != ''">pinyin_code,</if>
+      <if test="drugType != null and drugType != ''">drug_type,</if>
+      <if test="drugDosageForm != null and drugDosageForm != ''">drug_dosage_form,</if>
+      <if test="isOtc != null">is_otc,</if>
+      <if test="usage != null and usage != ''">`usage`,</if>
+      <if test="dosage != null and dosage != ''">dosage,</if>
+      <if test="frequency != null and frequency != ''">frequency,</if>
+      <if test="remark != null">remark,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">#{name},</if>
+      <if test="specification != null and specification != ''">#{specification},</if>
+      <if test="preType != null">#{preType},</if>
+      <if test="purchasePrice != null">#{purchasePrice},</if>
+      <if test="drugPrice != null">#{drugPrice},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="pinyinCode != null and pinyinCode != ''">#{pinyinCode},</if>
+      <if test="drugType != null and drugType != ''">#{drugType},</if>
+      <if test="drugDosageForm != null and drugDosageForm != ''">#{drugDosageForm},</if>
+      <if test="isOtc != null">#{isOtc},</if>
+      <if test="usage != null and usage != ''">#{usage},</if>
+      <if test="dosage != null and dosage != ''">#{dosage},</if>
+      <if test="frequency != null and frequency != ''">#{frequency},</if>
+      <if test="remark != null">#{remark},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateOsDrug" parameterType="OsDrug">
+    update os_drug
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="name != null and name != ''">name = #{name},</if>
+      <if test="specification != null and specification != ''">specification = #{specification},</if>
+      <if test="preType != null">pre_type = #{preType},</if>
+      <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
+      <if test="drugPrice != null">drug_price = #{drugPrice},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="pinyinCode != null and pinyinCode != ''">pinyin_code = #{pinyinCode},</if>
+      <if test="drugType != null and drugType != ''">drug_type = #{drugType},</if>
+      <if test="drugDosageForm != null and drugDosageForm != ''">drug_dosage_form = #{drugDosageForm},</if>
+      <if test="isOtc != null">is_otc = #{isOtc},</if>
+      <if test="usage != null and usage != ''">`usage` = #{usage},</if>
+      <if test="dosage != null and dosage != ''">dosage = #{dosage},</if>
+      <if test="frequency != null and frequency != ''">frequency = #{frequency},</if>
+      <if test="remark != null">remark = #{remark},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where drug_id = #{drugId}
+  </update>
+
+  <delete id="deleteOsDrugByDrugId" parameterType="Long">
+    delete
+    from os_drug
+    where drug_id = #{drugId}
+  </delete>
+
+  <delete id="deleteOsDrugByDrugIds" parameterType="String">
+    delete from os_drug where drug_id in
+    <foreach item="drugId" collection="array" open="(" separator="," close=")">
+      #{drugId}
+    </foreach>
+  </delete>
+</mapper>
