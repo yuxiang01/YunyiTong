@@ -1,5 +1,6 @@
 package com.yyt.system.service;
 
+import java.util.HashMap;
 import java.util.List;
 import com.yyt.system.domain.OsDoctor;
 
@@ -58,4 +59,20 @@ public interface IOsDoctorService
      * @return 结果
      */
     public int deleteOsDoctorByDoctorId(Long doctorId);
+
+    /**
+     * 根据部门ID查询医生
+     *
+     * @param deptId 部门ID
+     * @return 结果
+     */
+    public List<HashMap> findDoctorByDeptId(String deptId);
+
+    /**
+     * 根据医生ID查询医生
+     *
+     * @param doctorId 部门ID
+     * @return 结果
+     */
+    public HashMap findDoctorByDoctorId(String doctorId);
 }

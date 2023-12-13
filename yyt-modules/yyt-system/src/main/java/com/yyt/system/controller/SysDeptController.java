@@ -1,5 +1,6 @@
 package com.yyt.system.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,5 +130,31 @@ public class SysDeptController extends BaseController
         }
         deptService.checkDeptDataScope(deptId);
         return toAjax(deptService.deleteDeptById(deptId));
+    }
+
+    /**
+     * 根据医院名称查询一级科室
+     */
+    @GetMapping("/selAllDeptByHospitalName")
+    public AjaxResult selAllDeptByHospitalName(String name)
+    {
+        return success(deptService.selAllDeptByHospitalName(name));
+    }
+
+    /**
+     * 根据医院名称查询下级所有科室
+     */
+    @GetMapping("/selAllDeptById")
+    public AjaxResult selAllDeptById(String name)
+    {
+        return success(deptService.selAllDeptById(name));
+    }
+    /**
+     * 根据科室ID查询下级科室
+     */
+    @GetMapping("/selDeptById")
+    public AjaxResult selDeptById(String id)
+    {
+        return success(deptService.selDeptById(id));
     }
 }

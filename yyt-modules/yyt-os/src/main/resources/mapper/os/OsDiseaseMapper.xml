@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsDiseaseMapper">
+    
+    <resultMap type="OsDisease" id="OsDiseaseResult">
+        <result property="disId"    column="dis_id"    />
+        <result property="name"    column="name"    />
+        <result property="superDisId"    column="super_dis_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectOsDiseaseVo">
+        select dis_id, name, super_dis_id, create_by, create_time, update_by, update_time from os_disease
+    </sql>
+
+    <select id="selectOsDiseaseList" parameterType="OsDisease" resultMap="OsDiseaseResult">
+        <include refid="selectOsDiseaseVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="superDisId != null "> and super_dis_id = #{superDisId}</if>
+        </where>
+    </select>
+    
+    <select id="selectOsDiseaseByDisId" parameterType="Long" resultMap="OsDiseaseResult">
+        <include refid="selectOsDiseaseVo"/>
+        where dis_id = #{disId}
+    </select>
+        
+    <insert id="insertOsDisease" parameterType="OsDisease" useGeneratedKeys="true" keyProperty="disId">
+        insert into os_disease
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="superDisId != null">super_dis_id,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="superDisId != null">#{superDisId},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOsDisease" parameterType="OsDisease">
+        update os_disease
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="superDisId != null">super_dis_id = #{superDisId},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where dis_id = #{disId}
+    </update>
+
+    <delete id="deleteOsDiseaseByDisId" parameterType="Long">
+        delete from os_disease where dis_id = #{disId}
+    </delete>
+
+    <delete id="deleteOsDiseaseByDisIds" parameterType="String">
+        delete from os_disease where dis_id in 
+        <foreach item="disId" collection="array" open="(" separator="," close=")">
+            #{disId}
+        </foreach>
+    </delete>
+</mapper>

@@ -127,4 +127,8 @@
       #{regId}
     </foreach>
   </delete>
+
+  <select id="findDoctorRegCountByDoctorId" parameterType="String" resultType="integer">
+    select count(*) from os_regorder where doctor_id=#{doctorId} and reg_id like CONCAT('%',REPLACE(DATE(NOW()),'-',''),'%')
+  </select>
 </mapper>

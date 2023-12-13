@@ -58,4 +58,12 @@ public interface IOsRegorderService {
    * @return 结果
    */
   public int deleteOsRegorderByRegId(String regId);
+
+  /**
+   * 根据医生ID查询该医生预约数
+   *
+   * @param doctorId 医生ID
+   * @return
+   */
+  public Integer findDoctorRegCountByDoctorId(String doctorId);
 }

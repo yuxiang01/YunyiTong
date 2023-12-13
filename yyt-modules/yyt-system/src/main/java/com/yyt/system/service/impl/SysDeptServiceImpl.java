@@ -1,6 +1,7 @@
 package com.yyt.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -291,6 +292,39 @@ public class SysDeptServiceImpl implements ISysDeptService
     public int deleteDeptById(Long deptId)
     {
         return deptMapper.deleteDeptById(deptId);
+    }
+
+    /**
+     * 根据医院名称查询一级科室
+     *
+     * @param name 医院名称
+     * @return
+     */
+    @Override
+    public List<HashMap> selAllDeptByHospitalName(String name) {
+        return deptMapper.selAllDeptByHospitalName(name);
+    }
+
+    /**
+     * 查询下级科室信息名称
+     *
+     * @param name 医院名称
+     * @return 结果
+     */
+    @Override
+    public List<HashMap> selAllDeptById(String name) {
+        return deptMapper.selAllDeptById(name);
+    }
+
+    /**
+     * 根据一级科室ID查询下级科室
+     *
+     * @param id 一级科室ID
+     * @return 结果
+     */
+    @Override
+    public List<HashMap> selDeptById(String id) {
+        return deptMapper.selDeptById(id);
     }
 
     /**

@@ -158,4 +158,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		update sys_dept set del_flag = '2' where dept_id = #{deptId}
 	</delete>
 
+
+	<select id="selAllDeptByHospitalName" parameterType="String" resultType="HashMap">
+		select dept_id,dept_name from sys_dept
+		where parent_id = (select dept_id from sys_dept where dept_name=#{name}) and dept_id != 211
+	</select>
+
+	<select id="selAllDeptById" parameterType="String" resultType="HashMap">
+		select dept_id,dept_name from sys_dept
+		where parent_id in(select dept_id from sys_dept
+		where parent_id = (select dept_id from sys_dept
+		where dept_name=#{name}) and dept_id != 211)
+	</select>
+
+	<select id="selDeptById" parameterType="String" resultType="HashMap">
+		select dept_id,dept_name from sys_dept where ancestors like concat('%',#{id},'%')
+	</select>
 </mapper> 

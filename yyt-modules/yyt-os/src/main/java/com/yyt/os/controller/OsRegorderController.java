@@ -96,4 +96,15 @@ public class OsRegorderController extends BaseController {
   public AjaxResult remove(@PathVariable String[] regIds) {
     return toAjax(osRegorderService.deleteOsRegorderByRegIds(regIds));
   }
+
+  /**
+   * 根据医生ID查询该医生预约数
+   *
+   * @param doctorId 医生ID
+   * @return
+   */
+  @GetMapping("/findDoctorRegCountByDoctorId")
+  public AjaxResult findDoctorRegCountByDoctorId(String doctorId){
+    return success(osRegorderService.findDoctorRegCountByDoctorId(doctorId));
+  }
 }

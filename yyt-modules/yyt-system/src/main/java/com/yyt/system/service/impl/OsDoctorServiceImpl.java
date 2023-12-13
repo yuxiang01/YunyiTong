@@ -1,5 +1,6 @@
 package com.yyt.system.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import com.yyt.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,5 +93,27 @@ public class OsDoctorServiceImpl implements IOsDoctorService
     public int deleteOsDoctorByDoctorId(Long doctorId)
     {
         return osDoctorMapper.deleteOsDoctorByDoctorId(doctorId);
+    }
+
+    /**
+     * 根据部门ID查询医生
+     *
+     * @param deptId 部门ID
+     * @return 结果
+     */
+    @Override
+    public List<HashMap> findDoctorByDeptId(String deptId) {
+        return osDoctorMapper.findDoctorByDeptId(deptId);
+    }
+
+    /**
+     * 根据医生ID查询医生
+     *
+     * @param doctorId 部门ID
+     * @return 结果
+     */
+    @Override
+    public HashMap findDoctorByDoctorId(String doctorId) {
+        return osDoctorMapper.findDoctorByDoctorId(doctorId);
     }
 }

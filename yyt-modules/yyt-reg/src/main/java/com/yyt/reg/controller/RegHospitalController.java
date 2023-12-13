@@ -39,7 +39,7 @@ public class RegHospitalController extends BaseController {
     /**
      * 查询医院列表
      */
-//    @RequiresPermissions("reg:hospital:list")
+    @RequiresPermissions("reg:hospital:list")
     @GetMapping("/list")
     public TableDataInfo list(RegHospital regHospital) {
         startPage();
@@ -98,6 +98,9 @@ public class RegHospitalController extends BaseController {
         return toAjax(regHospitalService.deleteRegHospitalByHospitalIds(hospitalIds));
     }
 
+    /**
+     * 查询所有医院
+     */
     @GetMapping("/selAll")
     public TableDataInfo list(String longitude, String latitude, String keywords) {
         startPage();
@@ -105,15 +108,31 @@ public class RegHospitalController extends BaseController {
         return getDataTable(list);
     }
 
+    /**
+     * 查询省份下所有的医院
+     */
     @GetMapping("/selAllByProId")
     public TableDataInfo selAllByProId(String id, String longitude, String latitude, String tagId) {
         List<HashMap> list = regHospitalService.selAllByProId(id, longitude, latitude, tagId);
         return getDataTable(list);
     }
 
+    /**
+     * 查询市区下所有的医院
+     */
     @GetMapping("/selAllByCityId")
     public TableDataInfo selAllByCityId(String id, String longitude, String latitude, String tagId) {
         List<HashMap> list = regHospitalService.selAllByCityId(id, longitude, latitude, tagId);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询区县下所有的医院
+     */
+    @GetMapping("/selAllByAreaId")
+    public TableDataInfo selAllByAreaId(String id, String longitude, String latitude, String tagId) {
+        System.out.println(id + "--------" + longitude + "----------" + latitude + "---------" + tagId);
+        List<HashMap> list = regHospitalService.selAllByAreaId(id, longitude, latitude, tagId);
         return getDataTable(list);
     }
 }

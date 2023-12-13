@@ -62,4 +62,12 @@ public interface OsRegorderMapper {
 
   @Select("SELECT reg_id FROM os_regorder ORDER BY reg_id DESC LIMIT 1")
   String lastRowOrderId();
+
+  /**
+   * 根据医生ID查询该医生预约数
+   *
+   * @param doctorId 医生ID
+   * @return
+   */
+  public Integer findDoctorRegCountByDoctorId(String doctorId);
 }

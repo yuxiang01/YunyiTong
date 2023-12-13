@@ -154,4 +154,12 @@
       #{doctorId}
     </foreach>
   </delete>
+
+  <select id="findDoctorByDeptId" parameterType="String" resultType="HashMap">
+    select doctor_id,name,intro from os_doctor where dept_id=#{deptId}
+  </select>
+
+  <select id="findDoctorByDoctorId" parameterType="String" resultType="HashMap">
+    select doctor_id,name,dept_id,age,cost,intro,areas_of_expertise,duty_info from os_doctor where doctor_id=#{doctorId}
+  </select>
 </mapper>
