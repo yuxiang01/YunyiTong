@@ -113,7 +113,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="doctorList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="450" :data="doctorList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="所属科室" align="center" prop="deptName"/>
       <el-table-column label="姓名" align="center" prop="name"/>

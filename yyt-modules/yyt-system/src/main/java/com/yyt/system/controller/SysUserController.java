@@ -305,6 +305,7 @@ public class SysUserController extends BaseController {
     loginUser.setPermissions(permissions);
     return R.ok(loginUser);
   }
+
   //注册
   @PostMapping("/wx/register")
   R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {

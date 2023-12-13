@@ -559,6 +559,7 @@ $lighterBlue: #409EFF;
   overflow: hidden;
 }
 .center-scrollbar {
+  padding-bottom: 80px;
   height: calc(100vh - 42px);
   overflow: hidden;
   border-left: 1px solid #f1e8e8;

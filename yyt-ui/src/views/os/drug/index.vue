@@ -95,7 +95,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="drugList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="500" :data="drugList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="药品编号" align="center" prop="drugId"/>
       <el-table-column label="药品名称" align="center" prop="name"/>
@@ -139,7 +139,6 @@
           <dict-tag :options="dict.type.sys_frequentness_frequentness" :value="scope.row.frequency"/>
         </template>
       </el-table-column>
-      <el-table-column label="药品备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -284,7 +283,7 @@
 
 <script>
 import {listDrug, getDrug, delDrug, addDrug, updateDrug} from "@/api/os/drug";
-import {makePy} from "@/utils/pinyin";
+import {makePy} from "@/utils/web-utils";
 
 export default {
   name: "Drug",

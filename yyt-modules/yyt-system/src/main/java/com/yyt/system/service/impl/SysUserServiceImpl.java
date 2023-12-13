@@ -509,8 +509,7 @@ public class SysUserServiceImpl implements ISysUserService {
     return userMapper.selectUserByOpenId(getOpenId(code));
   }
 
-
-  //拿到openid
+  // 拿到openid
   private String getOpenId(String code) {
     String url = "https://api.weixin.qq.com/sns/jscode2session";
     HashMap<String, Object> map = new HashMap<>();
@@ -527,7 +526,7 @@ public class SysUserServiceImpl implements ISysUserService {
     return openId;
   }
 
-  //注册
+  // 注册
   @Override
   public SysUser register(RegisterWxUser user) {
     String openId = getOpenId(user.getCode());
@@ -542,7 +541,7 @@ public class SysUserServiceImpl implements ISysUserService {
         user1.setOpenId(openId);
         user1.setNickName(sj);
         user1.setPhonenumber(user.getPhone());
-        //构建用户
+        // 构建用户
         return userMapper.insertUser(user1) > 0 ? user1 : null;
       }
     }
@@ -563,7 +562,7 @@ public class SysUserServiceImpl implements ISysUserService {
         return "验证码发送失败";
       }
     }
-    return "该用户以存在";
+    return "该用户已存在";
   }
 }
 

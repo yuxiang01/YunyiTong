@@ -121,6 +121,20 @@ export const dynamicRoutes = [
     ]
   },
   {
+    path: '/os/patient-info',
+    component: Layout,
+    hidden: true,
+    permissions: ['os:patient:query'],
+    children: [
+      {
+        path: 'info/:patientId(\\d+)',
+        component: () => import('@/views/os/patient/info.vue'),
+        name: 'patientInfo',
+        meta: { title: '患者信息', activeMenu: '/os/patient' }
+      }
+    ]
+  },
+  {
     path: '/system/dict-data',
     component: Layout,
     hidden: true,

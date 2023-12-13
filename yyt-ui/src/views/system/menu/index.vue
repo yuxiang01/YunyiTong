@@ -52,6 +52,7 @@
       v-if="refreshTable"
       v-loading="loading"
       :data="menuList"
+      height="550"
       row-key="menuId"
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"

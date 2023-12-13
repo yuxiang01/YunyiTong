@@ -19,6 +19,43 @@ export function makePy(str) {
   return mkResult(arrResult).join(",")
 }
 
+/**
+ * 通过医生信息 => 科室-医生的级联信息
+ * @param doctors 医生列表
+ * @return {*[]} 科室-医生的级联信息
+ */
+export function doctorsToMap(doctors) {
+  return convertDataToHierarchy(doctors)
+}
+
+/**
+ * 根据身份证计算年龄
+ * @param idNumber 身份证号
+ * @return {number} age
+ */
+export function calculateAge(idNumber) {
+  // 获取生日
+  let birthday = idNumber.substr(6, 8)
+  let birthYear = parseInt(birthday.substr(0, 4))
+  let birthMonth = parseInt(birthday.substr(4, 2))
+  let birthDay = parseInt(birthday.substr(6, 2))
+
+  // 获取当前日期
+  let today = new Date()
+  let currentYear = today.getFullYear()
+  let currentMonth = today.getMonth() + 1
+  let currentDay = today.getDate()
+
+  // 计算年龄
+  let age = currentYear - birthYear
+
+  // 根据月份和日期判断是否已过生日
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--
+  }
+  return age
+}
+
 function checkCh(ch) {
   let uni = ch.charCodeAt(0);
   //如果不在汉字处理范围之内,返回原字符,也可以调用自己的处理函数
@@ -53,4 +90,37 @@ function mkResult(arr) {
     }
   }
   return arrResult;
+}
+
+function convertDataToHierarchy(data) {
+  const result = [];
+
+  const groupedByDepartment = data.reduce((acc, doctor) => {
+    if (!acc[doctor.deptName]) {
+      acc[doctor.deptName] = [];
+    }
+    acc[doctor.deptName].push(doctor);
+    return acc;
+  }, {});
+
+
+  for (const department in groupedByDepartment) {
+    const departmentData = groupedByDepartment[department];
+    const departmentItem = {
+      label: department,
+      value: departmentData[0].deptId,
+      children: []
+    };
+
+    for (const doctor of departmentData) {
+      departmentItem.children.push({
+        label: doctor.name,
+        value: doctor.doctorId
+      });
+    }
+
+    result.push(departmentItem);
+  }
+
+  return result;
 }

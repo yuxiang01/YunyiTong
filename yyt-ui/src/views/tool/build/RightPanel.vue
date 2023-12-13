@@ -883,6 +883,7 @@ export default {
     overflow: hidden;
   }
   .el-scrollbar {
+    padding-bottom: 60px;
     height: 100%;
   }
 }

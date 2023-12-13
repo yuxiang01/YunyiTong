@@ -1,7 +1,7 @@
 <script>
 import {listRegorder, getRegorder, delRegorder, addRegorder, updateRegorder} from "@/api/os/regorder";
 import {listDoctor} from "@/api/system/doctor";
-import {doctorsToMap} from "@/utils/map";
+import {doctorsToMap} from "@/utils/web-utils";
 import {listPatient} from "@/api/os/patient";
 
 export default {
@@ -280,7 +280,7 @@ export default {
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="regorderList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="500" :data="regorderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="挂号单号" align="center" prop="regId"/>
       <el-table-column label="患者" align="center" prop="patient"/>
@@ -345,13 +345,14 @@ export default {
               :label="item.name"
               :value="item.patientId">
               <div class="patient">
-                <el-avatar v-if="item.sex === '1'" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+                <el-avatar v-if="item.sex === '1'"
+                           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
                 <el-avatar v-else icon="el-icon-user-solid"></el-avatar>
                 <div class="info">
                   <span style="font-weight: 700;color:#000;">{{ item.name }}</span>
                   <span>{{ dictFormat(item.sex) }}</span>
                   <span>{{ item.age }}岁</span>
-                  <span>{{ item.phone}}</span>
+                  <span>{{ item.phone }}</span>
                 </div>
               </div>
             </el-option>

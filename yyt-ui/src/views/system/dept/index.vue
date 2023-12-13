@@ -51,6 +51,7 @@
     <el-table
       v-if="refreshTable"
       v-loading="loading"
+      height="550"
       :data="deptList"
       row-key="deptId"
       :default-expand-all="isExpandAll"

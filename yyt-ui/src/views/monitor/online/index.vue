@@ -24,6 +24,7 @@
 
     </el-form>
     <el-table
+      height="500"
       v-loading="loading"
       :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
       style="width: 100%;"

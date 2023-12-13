@@ -24,7 +24,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['os:patient:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -35,7 +36,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['os:patient:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -46,7 +48,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['os:patient:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -56,22 +59,25 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['os:patient:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="patientList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="患者编号" align="center" prop="patientId" />
-      <el-table-column label="患者姓名" align="center" prop="name" />
+    <el-table v-loading="loading" height="500" :data="patientList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="患者编号" align="center" prop="patientId"/>
+      <el-table-column label="患者姓名" align="center" prop="name"/>
       <el-table-column label="患者性别" align="center" prop="sex">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="患者年龄" align="center" prop="age" />
-      <el-table-column label="手机号码" align="center" prop="phone" />
+      <el-table-column label="患者年龄" align="center">
+        <template #default="scope">{{ calculateAge(scope.row.card) }}</template>
+      </el-table-column>
+      <el-table-column label="手机号码" align="center" prop="phone"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -80,14 +86,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['os:patient:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['os:patient:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -104,7 +112,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="患者姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入患者姓名" />
+          <el-input v-model="form.name" placeholder="请输入患者姓名"/>
         </el-form-item>
         <el-form-item label="患者性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择患者性别">
@@ -116,23 +124,23 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="证件号码" prop="card">
+          <el-input v-model="form.card" @blur="getAge" placeholder="请输入证件号码"/>
+        </el-form-item>
         <el-form-item label="患者年龄" prop="age">
-          <el-input v-model="form.age" placeholder="请输入患者年龄" />
+          <el-input v-model="form.age" placeholder="请输入患者年龄"/>
         </el-form-item>
         <el-form-item label="手机号码" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号码" />
-        </el-form-item>
-        <el-form-item label="证件号码" prop="card">
-          <el-input v-model="form.card" placeholder="请输入证件号码" />
+          <el-input v-model="form.phone" placeholder="请输入手机号码"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址" />
+          <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
         <el-form-item label="详细地址" prop="detailsAddress">
-          <el-input v-model="form.detailsAddress" placeholder="请输入详细地址" />
+          <el-input v-model="form.detailsAddress" placeholder="请输入详细地址"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
+          <el-input v-model="form.remark" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -144,7 +152,8 @@
 </template>
 
 <script>
-import { listPatient, getPatient, delPatient, addPatient, updatePatient } from "@/api/os/patient";
+import {listPatient, getPatient, delPatient, addPatient, updatePatient} from "@/api/os/patient";
+import {calculateAge} from "@/utils/web-utils";
 
 export default {
   name: "Patient",
@@ -180,25 +189,26 @@ export default {
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "患者姓名不能为空", trigger: "blur" }
+          {required: true, message: "患者姓名不能为空", trigger: "blur"}
         ],
         sex: [
-          { required: true, message: "患者性别不能为空", trigger: "change" }
+          {required: true, message: "患者性别不能为空", trigger: "change"}
         ],
         age: [
-          { required: true, message: "患者年龄不能为空", trigger: "blur" }
+          {required: true, message: "患者年龄不能为空", trigger: "blur"}
         ],
         phone: [
-          { required: true, message: "手机号码不能为空", trigger: "blur" }
+          {required: true, message: "手机号码不能为空", trigger: "blur"}
         ],
         card: [
-          { required: true, message: "证件号码不能为空", trigger: "blur" }
+          {required: true, message: "证件号码不能为空", trigger: "blur"},
+          {pattern: /\d{17}[\d|x]|\d{15}/, message: "请填写正确的身份证", trigger: "blur"}
         ],
         address: [
-          { required: true, message: "地址不能为空", trigger: "blur" }
+          {required: true, message: "地址不能为空", trigger: "blur"}
         ],
         detailsAddress: [
-          { required: true, message: "详细地址不能为空", trigger: "blur" }
+          {required: true, message: "详细地址不能为空", trigger: "blur"}
         ]
       }
     };
@@ -207,6 +217,7 @@ export default {
     this.getList();
   },
   methods: {
+    calculateAge,
     /** 查询患者列表 */
     getList() {
       this.loading = true;
@@ -250,7 +261,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.patientId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -260,14 +271,14 @@ export default {
       this.title = "添加患者";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    async handleUpdate(row) {
       this.reset();
       const patientId = row.patientId || this.ids
-      getPatient(patientId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改患者";
-      });
+      let response = await getPatient(patientId)
+      this.form = response.data;
+      this.open = true;
+      this.title = "修改患者";
+      this.getAge()
     },
     /** 提交按钮 */
     submitForm() {
@@ -292,18 +303,27 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const patientIds = row.patientId || this.ids;
-      this.$modal.confirm('是否确认删除患者编号为"' + patientIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除患者编号为"' + patientIds + '"的数据项？').then(function () {
         return delPatient(patientIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
       this.download('os/patient/export', {
         ...this.queryParams
       }, `patient_${new Date().getTime()}.xlsx`)
+    },
+    getAge() {
+      let pattern = /\d{17}[\d|x]|\d{15}/
+      let card = this.form.card
+      console.log("校验 = " + pattern.test(card))
+      if (pattern.test(card)) {
+        this.form.age = calculateAge(card)
+      }
     }
   }
 };

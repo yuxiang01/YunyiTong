@@ -25,4 +25,8 @@ export default {
 #app .theme-picker {
   display: none;
 }
+html,body,#app{
+  height: 100%;
+  overflow: hidden;
+}
 </style>
