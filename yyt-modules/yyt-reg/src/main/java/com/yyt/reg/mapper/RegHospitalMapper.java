@@ -85,4 +85,13 @@ public interface RegHospitalMapper {
      * @return 结果
      */
     public List<HashMap> selAllByCityId(String param1, String param2);
+
+    /**
+     * 查询该区县下所有医院
+     *
+     * @param param1 地区ID
+     * @param param2 标签ID
+     * @return 结果
+     */
+    public List<HashMap> selAllByAreaId(String param1, String param2);
 }

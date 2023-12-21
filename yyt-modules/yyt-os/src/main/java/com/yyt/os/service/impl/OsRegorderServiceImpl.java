@@ -106,4 +106,9 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
   public int deleteOsRegorderByRegId(String regId) {
     return osRegorderMapper.deleteOsRegorderByRegId(regId);
   }
+
+  @Override
+  public Integer findDoctorRegCountByDoctorId(String doctorId) {
+    return osRegorderMapper.findDoctorRegCountByDoctorId(doctorId);
+  }
 }

@@ -82,4 +82,13 @@ public interface IRegHospitalService {
      * @return 结果
      */
     public List<HashMap> selAllByCityId(String id, String longitude, String latitude, String tagId);
+
+    /**
+     * 查询该区县下所有医院
+     *
+     * @param id 地区ID
+     * @param tagId 标签ID
+     * @return 结果
+     */
+    public List<HashMap> selAllByAreaId(String id, String longitude, String latitude, String tagId);
 }

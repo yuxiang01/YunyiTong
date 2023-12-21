@@ -1,5 +1,6 @@
 package com.yyt.system.mapper;
 
+import java.util.HashMap;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.yyt.system.api.domain.SysDept;
@@ -115,4 +116,28 @@ public interface SysDeptMapper
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    /**
+     * 查询一级科室信息名称
+     *
+     * @param name 医院名称
+     * @return 结果
+     */
+    public List<HashMap> selAllDeptByHospitalName(String name);
+
+    /**
+     * 查询下级科室信息名称
+     *
+     * @param name 医院名称
+     * @return 结果
+     */
+    public List<HashMap> selAllDeptById(String name);
+
+    /**
+     * 根据一级科室ID查询下级科室
+     *
+     * @param id 一级科室ID
+     * @return 结果
+     */
+    public List<HashMap> selDeptById(String id);
 }

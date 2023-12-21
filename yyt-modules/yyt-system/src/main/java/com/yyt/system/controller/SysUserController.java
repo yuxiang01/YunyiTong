@@ -287,6 +287,12 @@ public class SysUserController extends BaseController {
     return success(deptService.selectDeptTreeList(dept));
   }
 
+  /**
+   * 微信用户登录
+   * @param code 临时授权码
+   * @return LoginUser
+   */
+  @InnerAuth
   @PostMapping("/code/{code}")
   public R<LoginUser> selectUserByOpenId(@PathVariable String code) {
     SysUser sysUser = userService.selectUserByOpenId(code);
@@ -307,6 +313,7 @@ public class SysUserController extends BaseController {
   }
 
   //注册
+  @InnerAuth
   @PostMapping("/wx/register")
   R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {
     SysUser user = userService.register(wxUser);

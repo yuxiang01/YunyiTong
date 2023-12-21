@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsScheduleMapper">
+    
+    <resultMap type="OsSchedule" id="OsScheduleResult">
+        <result property="schedId"    column="sched_id"    />
+        <result property="date"    column="date"    />
+        <result property="morning"    column="morning"    />
+        <result property="afternoon"    column="afternoon"    />
+        <result property="regNumber"    column="reg_number"    />
+        <result property="doctorId"    column="doctor_id"    />
+        <result property="nowNumber"    column="now_number"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectOsScheduleVo">
+        select sched_id, date, morning, afternoon, reg_number, doctor_id, now_number, create_by, create_time, update_by, update_time from os_schedule
+    </sql>
+
+    <select id="selectOsScheduleList" parameterType="OsSchedule" resultMap="OsScheduleResult">
+        <include refid="selectOsScheduleVo"/>
+        <where>  
+            <if test="date != null "> and date = #{date}</if>
+            <if test="morning != null "> and morning = #{morning}</if>
+            <if test="afternoon != null "> and afternoon = #{afternoon}</if>
+            <if test="regNumber != null "> and reg_number = #{regNumber}</if>
+            <if test="doctorId != null "> and doctor_id = #{doctorId}</if>
+            <if test="nowNumber != null "> and now_number = #{nowNumber}</if>
+        </where>
+    </select>
+    
+    <select id="selectOsScheduleBySchedId" parameterType="Long" resultMap="OsScheduleResult">
+        <include refid="selectOsScheduleVo"/>
+        where sched_id = #{schedId}
+    </select>
+        
+    <insert id="insertOsSchedule" parameterType="OsSchedule" useGeneratedKeys="true" keyProperty="schedId">
+        insert into os_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="date != null">date,</if>
+            <if test="morning != null">morning,</if>
+            <if test="afternoon != null">afternoon,</if>
+            <if test="regNumber != null">reg_number,</if>
+            <if test="doctorId != null">doctor_id,</if>
+            <if test="nowNumber != null">now_number,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="date != null">#{date},</if>
+            <if test="morning != null">#{morning},</if>
+            <if test="afternoon != null">#{afternoon},</if>
+            <if test="regNumber != null">#{regNumber},</if>
+            <if test="doctorId != null">#{doctorId},</if>
+            <if test="nowNumber != null">#{nowNumber},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOsSchedule" parameterType="OsSchedule">
+        update os_schedule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">date = #{date},</if>
+            <if test="morning != null">morning = #{morning},</if>
+            <if test="afternoon != null">afternoon = #{afternoon},</if>
+            <if test="regNumber != null">reg_number = #{regNumber},</if>
+            <if test="doctorId != null">doctor_id = #{doctorId},</if>
+            <if test="nowNumber != null">now_number = #{nowNumber},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where sched_id = #{schedId}
+    </update>
+
+    <delete id="deleteOsScheduleBySchedId" parameterType="Long">
+        delete from os_schedule where sched_id = #{schedId}
+    </delete>
+
+    <delete id="deleteOsScheduleBySchedIds" parameterType="String">
+        delete from os_schedule where sched_id in 
+        <foreach item="schedId" collection="array" open="(" separator="," close=")">
+            #{schedId}
+        </foreach>
+    </delete>
+
+    <select id="findScheduleInfoByDoctorId" parameterType="String" resultType="HashMap">
+        select RIGHT(date,5) date,morning,afternoon from os_schedule where doctor_id=#{doctorId}
+    </select>
+</mapper>

@@ -131,6 +131,11 @@ public class RegHospitalServiceImpl implements IRegHospitalService {
         return sort(regHospitalMapper.selAllByCityId(id, tagId), longitude, latitude);
     }
 
+    @Override
+    public List<HashMap> selAllByAreaId(String id, String longitude, String latitude, String tagId) {
+        return sort(regHospitalMapper.selAllByAreaId(id, tagId), longitude, latitude);
+    }
+
 
     //医院信息列表排序
     private List<HashMap> sort(List<HashMap> list, String longitude, String latitude) {

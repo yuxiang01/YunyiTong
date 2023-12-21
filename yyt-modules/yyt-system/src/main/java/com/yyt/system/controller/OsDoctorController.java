@@ -96,4 +96,27 @@ public class OsDoctorController extends BaseController {
   public AjaxResult remove(@PathVariable Long[] doctorIds) {
     return toAjax(osDoctorService.deleteOsDoctorByDoctorIds(doctorIds));
   }
+
+
+  /**
+   * 根据部门ID查询医生
+   *
+   * @param deptId 部门ID
+   * @return
+   */
+  @GetMapping("/findDoctorByDeptId")
+  public AjaxResult findDoctorByDeptId(String deptId){
+    return success(osDoctorService.findDoctorByDeptId(deptId));
+  }
+
+  /**
+   * 根据医生ID查询医生
+   *
+   * @param doctorId 医生ID
+   * @return
+   */
+  @GetMapping("/findDoctorByDoctorId")
+  public AjaxResult findDoctorByDoctorId(String doctorId){
+    return success(osDoctorService.findDoctorByDoctorId(doctorId));
+  }
 }
