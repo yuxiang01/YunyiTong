@@ -43,6 +43,11 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
    */
   @Override
   public List<OsRegorder> selectOsRegorderList(OsRegorder osRegorder) {
+    Date[] queryTime = osRegorder.getQueryTime();
+    if (queryTime != null && queryTime.length == 2) {
+      osRegorder.setStartTime(queryTime[0]);
+      osRegorder.setEndTime(queryTime[1]);
+    }
     return osRegorderMapper.selectOsRegorderList(osRegorder);
   }
 
@@ -64,6 +69,7 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
     } else {
       osRegorder.setRegId(prefix + "0001");
     }
+    osRegorder.setCreateTime(new Date());
     return osRegorderMapper.insertOsRegorder(osRegorder);
   }
 
@@ -75,6 +81,7 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
    */
   @Override
   public int updateOsRegorder(OsRegorder osRegorder) {
+    osRegorder.setUpdateTime(new Date());
     return osRegorderMapper.updateOsRegorder(osRegorder);
   }
 

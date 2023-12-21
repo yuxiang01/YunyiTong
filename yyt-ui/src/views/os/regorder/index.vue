@@ -3,6 +3,7 @@ import {listRegorder, getRegorder, delRegorder, addRegorder, updateRegorder} fro
 import {listDoctor} from "@/api/system/doctor";
 import {doctorsToMap} from "@/utils/web-utils";
 import {listPatient} from "@/api/os/patient";
+import PatentSelected from "@/components/PatentSelected/index.vue";
 
 export default {
   name: "Regorder",
@@ -66,6 +67,7 @@ export default {
   },
   created() {
     this.getList();
+    listPatient().then(res => this.patientList = res.rows)
   },
   methods: {
     handleChange(value) {
@@ -87,7 +89,6 @@ export default {
       let {rows} = await listDoctor()
       this.doctorList = rows
       this.cascadeList = doctorsToMap(rows)
-      listPatient().then(res => this.patientList = res.rows)
     },
     // 取消按钮
     cancel() {
@@ -181,11 +182,9 @@ export default {
       this.download('os/regorder/export', {
         ...this.queryParams
       }, `regorder_${new Date().getTime()}.xlsx`)
-    },
-    dictFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_user_sex, row);
-    },
-  }
+    }
+  },
+  components: {PatentSelected}
 };
 </script>
 
@@ -280,7 +279,7 @@ export default {
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" height="500" :data="regorderList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="450" :data="regorderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="挂号单号" align="center" prop="regId"/>
       <el-table-column label="患者" align="center" prop="patient"/>
@@ -344,17 +343,7 @@ export default {
               :key="item.patientId"
               :label="item.name"
               :value="item.patientId">
-              <div class="patient">
-                <el-avatar v-if="item.sex === '1'"
-                           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-                <el-avatar v-else icon="el-icon-user-solid"></el-avatar>
-                <div class="info">
-                  <span style="font-weight: 700;color:#000;">{{ item.name }}</span>
-                  <span>{{ dictFormat(item.sex) }}</span>
-                  <span>{{ item.age }}岁</span>
-                  <span>{{ item.phone }}</span>
-                </div>
-              </div>
+              <PatentSelected :item="item"/>
             </el-option>
           </el-select>
         </el-form-item>
@@ -426,24 +415,8 @@ export default {
 
 <style scoped>
 /deep/ .el-select-dropdown__item {
-  height: 50px !important;
-  line-height: 50px !important;
-}
-
-.patient {
-  height: 50px;
-  display: flex;
-  align-items: center;
-}
-
-.info span {
-  padding-left: 10px;
-  font-family: '思源黑体';
-  font-weight: 400;
-  font-size: 12px;
-  color: #999999;
+  height: 70px !important;
+  line-height: 70px !important;
 }
 </style>
-
-
 

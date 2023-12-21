@@ -105,7 +105,6 @@
           <dict-tag :options="dict.type.sys_prescription_type" :value="scope.row.preType"/>
         </template>
       </el-table-column>
-      <el-table-column label="采购价" align="center" prop="purchasePrice"/>
       <el-table-column label="售药价" align="center" prop="drugPrice"/>
       <el-table-column label="药品状态" align="center" prop="status">
         <template slot-scope="scope">
@@ -125,15 +124,9 @@
       </el-table-column>
       <el-table-column label="是否OTC" align="center" prop="isOtc">
         <template slot-scope="scope">
-          {{ scope.row.isOtc == 0 ? '处方药' : '非处方药'}}
+          {{ scope.row.isOtc == 0 ? '处方药' : '非处方药' }}
         </template>
       </el-table-column>
-      <el-table-column label="用法" align="center" prop="usage">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_usage_usage" :value="scope.row.usage"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="单次用量" align="center" prop="dosage"/>
       <el-table-column label="频率" align="center" prop="frequency">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_frequentness_frequentness" :value="scope.row.frequency"/>
@@ -193,10 +186,11 @@
             <el-input v-model="form.specification" placeholder="请输入规格"/>
           </el-form-item>
           <el-form-item label="处方类型" prop="preType">
-            <el-select v-model="form.preType" placeholder="请选择处方类型">
+            <el-select v-model="form.preType" placeholder="请选择处方类型" @change="selectPreType">
               <el-option
                 v-for="dict in dict.type.sys_prescription_type"
                 :key="dict.value"
+                v-show="dict.label !== '附加费用'"
                 :label="dict.label"
                 :value="parseInt(dict.value)"
               ></el-option>
@@ -211,17 +205,25 @@
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
-              ></el-option>
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="药品分类" prop="drugType">
-            <el-select v-model="form.drugType" placeholder="请选择药品分类">
+            <el-select v-if="preType === 0" v-model="form.drugType" placeholder="请选择药品分类" clearable>
               <el-option
                 v-for="dict in dict.type.sys_drug_classification"
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
-              ></el-option>
+              />
+            </el-select>
+            <el-select v-if="preType === 1" v-model="form.drugType" placeholder="请选择药品分类" clearable>
+              <el-option
+                v-for="dict in dict.type.sys_china_drug"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
             </el-select>
           </el-form-item>
         </el-row>
@@ -249,7 +251,39 @@
         </el-row>
         <el-row type="flex" justify="left" align="top" :gutter="15">
           <el-form-item label="单次用量" prop="dosage">
-            <el-input v-model="form.dosage" placeholder="请输入单次用量"/>
+            <div class="flex-ver-center">
+              <el-input style="width: 140px;" v-model="form.dosage" placeholder="请输入单次用量"/>
+              <el-select style="width: 80px;margin-left: 5px" v-model="form.unit" placeholder="单位">
+                <el-option
+                  v-for="dict in dict.type.sys_unit_unit"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item label="总量" prop="total">
+            <div class="flex-ver-center">
+              <el-input style="width: 140px;" v-model="form.total" placeholder="请输入总量"/>
+              <el-select style="width: 80px;margin-left: 5px" v-model="form.totalUnit" placeholder="单位">
+                <el-option
+                  v-for="dict in dict.type.sys_unit_unit"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </div>
+          </el-form-item>
+        </el-row>
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="是否OTC" prop="isOtc">
+            <el-switch v-model="form.isOtc"
+                       active-text="处方药"
+                       :active-value="0"
+                       :inactive-value="1"
+                       inactive-text="非处方药"/>
           </el-form-item>
           <el-form-item label="频率" prop="frequency">
             <el-select v-model="form.frequency" placeholder="请输入频率">
@@ -262,13 +296,6 @@
             </el-select>
           </el-form-item>
         </el-row>
-        <el-form-item label="是否OTC" prop="isOtc">
-          <el-switch v-model="form.isOtc"
-                     active-text="处方药"
-                     :active-value="0"
-                     :inactive-value="1"
-                     inactive-text="非处方药"/>
-        </el-form-item>
         <el-form-item label="药品备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入药品备注"/>
         </el-form-item>
@@ -287,7 +314,12 @@ import {makePy} from "@/utils/web-utils";
 
 export default {
   name: "Drug",
-  dicts: ['sys_drug_classification', 'sys_drug_dosage', 'sys_prescription_type', 'sys_usage_usage', 'sys_frequentness_frequentness', 'sys_normal_disable'],
+  dicts: [
+    'sys_drug_classification', 'sys_drug_dosage',
+    'sys_prescription_type', 'sys_usage_usage',
+    'sys_frequentness_frequentness', 'sys_normal_disable',
+    'sys_unit_unit', 'sys_china_drug'
+  ],
   data() {
     return {
       // 遮罩层
@@ -357,13 +389,21 @@ export default {
         dosage: [
           {required: true, message: "单次用量不能为空", trigger: "blur"}
         ],
+        total: [
+          {required: true, message: "总量不能为空", trigger: "blur"}
+        ],
         frequency: [
           {required: true, message: "频率不能为空", trigger: "blur"}
         ],
         createTime: [
           {required: true, message: "创建时间不能为空", trigger: "blur"}
         ],
-      }
+        unit: [
+          {required: true, message: "请选择单次用量单位", trigger: "blur"}
+        ],
+      },
+      // 药品处方类型
+      preType: 0
     };
   },
   created() {
@@ -403,6 +443,9 @@ export default {
         isOtc: 0,
         usage: null,
         dosage: null,
+        unit: '2',
+        total: null,
+        totalUnit: '2',
         frequency: null,
         remark: null,
         createBy: null,
@@ -480,6 +523,9 @@ export default {
       this.download('os/drug/export', {
         ...this.queryParams
       }, `drug_${new Date().getTime()}.xlsx`)
+    },
+    selectPreType(value) {
+      this.preType = value
     }
   }
 };

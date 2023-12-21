@@ -70,7 +70,8 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/index'),
         name: 'Index',
-        meta: { title: '经营状况', icon: 'dashboard', affix: true }
+        meta: { title: '工作台', icon: 'dashboard', affix: true }
+        // meta: { title: '经营状况', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -127,10 +128,24 @@ export const dynamicRoutes = [
     permissions: ['os:patient:query'],
     children: [
       {
-        path: 'info/:patientId(\\d+)',
+        path: ':patientId',
         component: () => import('@/views/os/patient/info.vue'),
         name: 'patientInfo',
         meta: { title: '患者信息', activeMenu: '/os/patient' }
+      }
+    ]
+  },
+  {
+    path: '/os/consultation',
+    component: Layout,
+    hidden: true,
+    permissions: ['os:regorder:query'],
+    children: [
+      {
+        path: ':registerId',
+        component: () => import('@/views/os/regorder/consultation.vue'),
+        name: 'consultation',
+        meta: {title: '问诊', activeMenu: '/os/regorder'}
       }
     ]
   },

@@ -30,8 +30,17 @@ public class OsRegorder extends BaseEntity {
   @Excel(name = "患者编号")
   private Long patientId;
 
+  // 患者姓名
   private String patient;
 
+  // 患者sex
+  private String sex;
+
+  // 患者age
+  private Integer age;
+
+  // 患者phone
+  private String phone;
   /**
    * 接诊类型
    */
@@ -94,6 +103,12 @@ public class OsRegorder extends BaseEntity {
    * 收费日期
    */
   private Date payTime;
+
+  private Date[] queryTime;
+
+  private Date startTime;
+
+  private Date endTime;
 
   public void setRegId(String regId) {
     this.regId = regId;
@@ -215,12 +230,63 @@ public class OsRegorder extends BaseEntity {
     this.patient = patient;
   }
 
+  public String getSex() {
+    return sex;
+  }
+
+  public void setSex(String sex) {
+    this.sex = sex;
+  }
+
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public Date[] getQueryTime() {
+    return queryTime;
+  }
+
+  public void setQueryTime(Date[] queryTime) {
+    this.queryTime = queryTime;
+  }
+
+  public Date getStartTime() {
+    return startTime;
+  }
+
+  public void setStartTime(Date startTime) {
+    this.startTime = startTime;
+  }
+
+  public Date getEndTime() {
+    return endTime;
+  }
+
+  public void setEndTime(Date endTime) {
+    this.endTime = endTime;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
         .append("regId", getRegId())
         .append("patientId", getPatientId())
         .append("patient", getPatient())
+        .append("sex", getSex())
+        .append("age", getAge())
+        .append("phone", getPhone())
         .append("type", getType())
         .append("orderFee", getOrderFee())
         .append("fee", getFee())
@@ -233,6 +299,7 @@ public class OsRegorder extends BaseEntity {
         .append("money", getMoney())
         .append("payMethod", getPayMethod())
         .append("payTime", getPayTime())
+        .append("queryTime", getQueryTime())
         .toString();
   }
 }

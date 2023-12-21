@@ -1,78 +1,129 @@
 <template>
   <div class="patient_info">
     <div class="base_info">
-      <h1>基本信息</h1>
+      <div class="top">
+        <h1>基本信息</h1>
+        <el-radio-group v-model="labelPosition" size="small">
+          <el-radio-button label="left">基本信息</el-radio-button>
+          <el-radio-button label="right">电子病历</el-radio-button>
+          <el-radio-button label="top">缴费记录</el-radio-button>
+        </el-radio-group>
+      </div>
       <div class="form">
-        <el-form ref="elForm" :model="form" size="medium" label-width="150px" label-position="top">
-          <el-row type="flex" justify="left" align="top" :gutter="15">
-            <el-form-item label="患者姓名" prop="name">
-              <el-input v-model="form.name" placeholder="请输入患者姓名" clearable :style="{width: '100%'}"></el-input>
-            </el-form-item>
-            <el-form-item label="患者性别" prop="sex">
-              <el-select v-model="form.sex" placeholder="请选择患者性别" clearable :style="{width: '100%'}">
-                <el-option
-                  v-for="dict in dict.type.sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="患者年龄" prop="age">
-              <el-input v-model="form.age" placeholder="请输入患者年龄" clearable :style="{width: '100%'}"></el-input>
-            </el-form-item>
-            <el-form-item label="证件号码" prop="card">
-              <el-input v-model="form.card" placeholder="请输入证件号码" :maxlength="18" clearable
-                        :style="{width: '100%'}"></el-input>
-            </el-form-item>
-          </el-row>
-          <el-row type="flex" justify="left" align="top" :gutter="15">
-            <el-form-item label="手机号码" prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入手机号码" clearable :style="{width: '100%'}"></el-input>
-            </el-form-item>
-            <el-form-item label="地址" prop="address">
-              <el-input v-model="form.address" placeholder="请输入地址" :maxlength="18" clearable
-                        :style="{width: '100%'}"></el-input>
-            </el-form-item>
-            <el-form-item label="详细地址" prop="detailsAddress">
-              <el-input v-model="form.detailsAddress" placeholder="请输入详细地址" :maxlength="18" clearable
-                        :style="{width: '100%'}"></el-input>
-            </el-form-item>
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" placeholder="请输入备注" :maxlength="18" clearable
-                        :style="{width: '100%'}"></el-input>
-            </el-form-item>
-          </el-row>
-        </el-form>
+        <PatientBaseInfo :form="form"/>
       </div>
     </div>
     <div class="association">
-      <h1>关联家庭成员</h1>
+      <h1 style="margin-bottom: 20px;">关联家庭成员</h1>
       <div class="table">
-        <el-table :data="tableData" height="100" style="width: 100%">
+        <el-table :data="tableData" height="200" style="width: 100%">
           <template #empty>
             <el-button type="success" icon="el-icon-edit" @click="handleAdd" style="margin: 20px">
               添加家庭成员
             </el-button>
           </template>
-          <el-table-column align="center" prop="date" label="序号" width="80"/>
-          <el-table-column align="center" prop="name" label="家庭关系" width="100"/>
-          <el-table-column align="center" prop="name" label="姓名" width="180"/>
-          <el-table-column align="center" prop="name" label="性别" width="80"/>
-          <el-table-column align="center" prop="name" label="手机号码"/>
-          <el-table-column align="center" prop="name" label="出生日期"/>
-          <el-table-column align="center" prop="name" label="创建时间"/>
-          <el-table-column align="center" prop="address" label="操作"/>
+          <el-table-column align="center" label="序号" width="80">
+            <template #default="scope">{{ scope.$index + 1 }}</template>
+          </el-table-column>
+          <el-table-column label="家庭关系" align="center" width="100" prop="related">
+            <template #default="scope">
+              <dict-tag :options="dict.type.os_family_relationship" :value="scope.row.related"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="patient.name" label="姓名" width="120"/>
+          <el-table-column align="center" label="性别" width="80">
+            <template #default="scope">
+              <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.patient.sex"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="patient.phone" label="手机号码"/>
+          <el-table-column align="center" label="年龄" width="80">
+            <template #default="scope">{{ calculateAge(scope.row.patient.card) }}岁</template>
+          </el-table-column>
+          <el-table-column align="center" prop="createTime" label="创建时间"/>
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-view"
+                @click="handleQuery(scope.row)"
+                v-hasPermi="['os:patient:query']"
+              >查看
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-edit"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['os:families:edit']"
+              >编辑
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['os:families:remove']"
+              >取消关联
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
+      <div class="add flex-center">
+        <el-button v-if="tableData.length > 0" type="success" icon="el-icon-edit" @click="handleAdd"
+                   style="margin: 20px">
+          添加家庭成员
+        </el-button>
+      </div>
     </div>
+
+    <!-- 添加或修改患者家庭关系对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="400px" append-to-body>
+      <el-form ref="relatedForm" :model="relatedForm" :rules="rules" label-width="100px">
+        <el-form-item label="家庭关系" prop="related">
+          <el-select v-model="relatedForm.related" placeholder="请选择家庭关系">
+            <el-option
+              v-for="dict in dict.type.os_family_relationship"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关联的病人" prop="relatedPatientId">
+          <el-select v-model="relatedForm.relatedPatientId" :popper-append-to-body="false"
+                     placeholder="请选择关联的患者">
+            <el-option
+              v-for="item in patientList"
+              :key="item.patientId"
+              :label="item.name"
+              :value="item.patientId">
+              <PatentSelected :item="item"/>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import {getPatient, listPatient} from "@/api/os/patient";
+import {addFamilies, delFamilies, getFamilies, listFamilies, updateFamilies} from "@/api/os/families";
+import {calculateAge, getDecode, getEncode} from "@/utils/web-utils";
+import PatentSelected from "@/components/PatentSelected/index.vue";
+import PatientBaseInfo from "@/components/PatientInfo/index.vue";
+
 export default {
   name: "patientInfo",
-  dicts: ['sys_user_sex'],
+  components: {PatientBaseInfo, PatentSelected},
+  dicts: ['sys_user_sex', 'os_family_relationship'],
   data() {
     return {
       form: {
@@ -85,19 +136,117 @@ export default {
         detailsAddress: undefined,
         remark: undefined,
       },
-      tableData: []
+      relatedForm: {
+        relatedId: null,
+        related: null,
+        patientId: null,
+        relatedPatientId: null,
+        createTime: null,
+        updateTime: null
+      },
+      tableData: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 患者列表
+      patientList: [],
+      patientId: null,
+      // 表单校验
+      rules: {
+        related: [
+          {required: true, message: "家庭关系不能为空", trigger: "change"}
+        ],
+        relatedPatientId: [
+          {required: true, message: "关联的病人不能为空", trigger: "blur"}
+        ],
+      },
+      labelPosition: 'left'
     }
   },
   created() {
-    const patientId = this.$route.params && this.$route.params.patientId;
-    console.log("patientId = " + patientId);
+    this.patientId = getDecode(this.$route.params && this.$route.params.patientId);
+    this.getList()
   },
   methods: {
+    calculateAge,
+    getList() {
+      getPatient(this.patientId).then(({data}) => {
+        this.form = data
+        let other = {path: this.$route.path, title: `患者信息【${this.form.name}】`}
+        this.$store.commit("tagsView/updatePatientViewTitle", other)
+      })
+      listFamilies({"patientId": this.patientId}).then(res => this.tableData = res.rows)
+      listPatient().then(res => this.patientList = res.rows)
+    },
+    reset() {
+      this.relatedForm = {
+        relatedId: null,
+        related: null,
+        patientId: null,
+        relatedPatientId: null,
+        createTime: null,
+        updateTime: null
+      };
+      this.resetForm("relatedForm");
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    /** 新增按钮操作 */
     handleAdd() {
-    }
+      this.reset();
+      this.open = true;
+      this.title = "添加患者家庭关系";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const relatedId = row.relatedId
+      getFamilies(relatedId).then(response => {
+        this.relatedForm = response.data;
+        this.open = true;
+        this.title = "修改患者家庭关系";
+      });
+    },
+    handleQuery(row) {
+      this.$router.push("/os/patient-info/" + getEncode(row.patient.patientId));
+    },
+    submitForm() {
+      this.$refs["relatedForm"].validate(valid => {
+        if (valid) {
+          if (this.relatedForm.relatedId != null) {
+            updateFamilies(this.relatedForm).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            this.relatedForm.patientId = this.patientId
+            addFamilies(this.relatedForm).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      })
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const relatedIds = row.relatedId;
+      this.$modal.confirm('是否确认删除与患者【' + row.patient.name + '】关联？').then(function () {
+        return delFamilies(relatedIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {
+      });
+    },
   }
 }
-
 </script>
 
 <style scoped>
@@ -124,18 +273,27 @@ export default {
   color: rgb(102, 110, 232);
 }
 
-.base_info > .form,
+.base_info .form,
 .association > .table {
-  padding: 0 60px;
+  padding: 0 40px;
 }
 
-/deep/ .el-form-item {
-  flex: 1;
-  margin-right: 30px;
+.base_info .top {
+  display: flex;
+  justify-content: space-between;
 }
 
 .association {
   margin-top: 10px;
+}
+
+/deep/ .el-select-dropdown__item {
+  height: 70px !important;
+  line-height: 70px !important;
+}
+
+/deep/ .el-dialog__body {
+  padding: 20px;
 }
 </style>
 

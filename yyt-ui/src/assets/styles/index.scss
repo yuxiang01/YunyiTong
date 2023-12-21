@@ -185,4 +185,15 @@ aside {
   display: flex;
   justify-content: center;
   align-content: center;
+  align-items: center
+}
+
+.flex-ver-center {
+  display: flex;
+  align-items: center
+}
+
+.blod_span {
+  color: red;
+  font-weight: bold;
 }

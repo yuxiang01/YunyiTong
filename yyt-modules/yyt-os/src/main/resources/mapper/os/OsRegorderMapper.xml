@@ -16,24 +16,29 @@
     <result property="money" column="money"/>
     <result property="payMethod" column="pay_method"/>
     <result property="payTime" column="pay_time"/>
+    <result property="createTime" column="create_time"/>
   </resultMap>
 
   <sql id="selectOsRegorderVo">
     SELECT reg_id,
            r.patient_id,
-           p.`name` patient,
+           p.`name`   patient,
+           p.sex,
+           p.age,
+           p.phone,
            type,
            order_fee,
            fee,
            r.dept_id,
            dept.dept_name deptName,
            d.doctor_id,
-           d.name   doctor,
+           d.name         doctor,
            rece_time,
            r.status,
            money,
            pay_method,
-           pay_time
+           pay_time,
+           r.create_time
     FROM `os_regorder` r
            LEFT JOIN `sys_patient` p
                      ON r.patient_id = p.patient_id
@@ -53,11 +58,16 @@
       <if test="deptId != null ">and dept_id = #{deptId}</if>
       <if test="doctorId != null ">and doctor_id = #{doctorId}</if>
       <if test="receTime != null ">and rece_time = #{receTime}</if>
-      <if test="status != null  and status != ''">and status = #{status}</if>
+      <if test="status != null  and status != ''">and r.status = #{status}</if>
       <if test="money != null ">and money = #{money}</if>
       <if test="payMethod != null  and payMethod != ''">and pay_method = #{payMethod}</if>
       <if test="payTime != null ">and pay_time = #{payTime}</if>
+      <if test="patient != null ">and p.`name` Like concat('%', #{patient}, '%')</if>
+      <if test="queryTime != null and queryTime.length == 2">
+        and r.create_time BETWEEN #{startTime} AND #{endTime}
+      </if>
     </where>
+    ORDER BY r.create_time DESC
   </select>
 
   <select id="selectOsRegorderByRegId" parameterType="String" resultMap="OsRegorderResult">
@@ -80,6 +90,8 @@
       <if test="money != null">money,</if>
       <if test="payMethod != null and payMethod != ''">pay_method,</if>
       <if test="payTime != null">pay_time,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateTime != null">update_time,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="regId != null">#{regId},</if>
@@ -94,6 +106,8 @@
       <if test="money != null">#{money},</if>
       <if test="payMethod != null and payMethod != ''">#{payMethod},</if>
       <if test="payTime != null">#{payTime},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateTime != null">#{updateTime},</if>
     </trim>
   </insert>
 

@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="患者姓名" prop="name">
+      <el-form-item label="项目名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入患者姓名"
+          placeholder="请输入项目名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -23,7 +23,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['os:patient:add']"
+          v-hasPermi="['os:checkItem:add']"
         >新增
         </el-button>
       </el-col>
@@ -35,7 +35,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['os:patient:edit']"
+          v-hasPermi="['os:checkItem:edit']"
         >修改
         </el-button>
       </el-col>
@@ -47,7 +47,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['os:patient:remove']"
+          v-hasPermi="['os:checkItem:remove']"
         >删除
         </el-button>
       </el-col>
@@ -58,42 +58,43 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['os:patient:export']"
+          v-hasPermi="['os:checkItem:export']"
         >导出
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" height="500" :data="patientList" @selection-change="handleSelectionChange">
+    <el-table height="500" v-loading="loading" :data="checkItemList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="患者编号" align="center" prop="patientId"/>
-      <el-table-column label="患者姓名" align="center" prop="name"/>
-      <el-table-column label="患者性别" align="center" prop="sex">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
+      <el-table-column label="项目编号" align="center" prop="checkId"/>
+      <el-table-column label="项目名称" align="center" prop="name"/>
+      <el-table-column label="项目类别" align="center" prop="type">
+        <template #default="scope">
+          <dict-tag :options="dict.type.sys_project_classification" :value="scope.row.type"/>
         </template>
       </el-table-column>
-      <el-table-column label="患者年龄" align="center">
-        <template #default="scope">{{ calculateAge(scope.row.card) }}</template>
+      <el-table-column label="部位" align="center" prop="part"/>
+      <el-table-column label="零售价" align="center" prop="retailPrice">
+        <template #default="scope">￥{{ scope.row.retailPrice.toFixed(2) }}</template>
       </el-table-column>
-      <el-table-column label="手机号码" align="center" prop="phone"/>
+      <el-table-column label="单位" align="center" prop="unit">
+        <template #default="scope">
+          <dict-tag :options="dict.type.sys_project_unit" :value="scope.row.unit"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="项目状态" align="center" prop="status">
+        <template #default="scope">{{ scope.row.status === 0 ? '启用' : '禁用' }}</template>
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-view"
-            @click="handleQueryInfo(scope.row)"
-            v-hasPermi="['os:patient:query']"
-          >查看
-          </el-button>
-          <el-button
-            size="mini"
-            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['os:patient:edit']"
+            v-hasPermi="['os:checkItem:edit']"
           >修改
           </el-button>
           <el-button
@@ -101,7 +102,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['os:patient:remove']"
+            v-hasPermi="['os:checkItem:remove']"
           >删除
           </el-button>
         </template>
@@ -116,39 +117,47 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改患者对话框 -->
+    <!-- 添加或修改检查项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="患者姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入患者姓名"/>
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入项目名称"/>
         </el-form-item>
-        <el-form-item label="患者性别" prop="sex">
-          <el-select v-model="form.sex" placeholder="请选择患者性别">
+        <el-form-item label="部位" prop="part">
+          <el-input v-model="form.part" placeholder="请输入部位"/>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select style="width: 100%;" v-model="form.type" placeholder="请选择项目类型">
             <el-option
-              v-for="dict in dict.type.sys_user_sex"
+              v-for="dict in dict.type.sys_project_classification"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
-        <el-form-item label="证件号码" prop="card">
-          <el-input v-model="form.card" @blur="getAge" placeholder="请输入证件号码"/>
+        <el-form-item label="零售价" prop="retailPrice">
+          <el-input v-model="form.retailPrice" placeholder="请输入零售价"/>
         </el-form-item>
-        <el-form-item label="患者年龄" prop="age">
-          <el-input v-model="form.age" placeholder="请输入患者年龄"/>
+        <el-form-item label="项目状态" prop="status">
+          <el-switch v-model="form.status"
+                     active-text="启用"
+                     :active-value="0"
+                     :inactive-value="1"
+                     inactive-text="禁用"/>
         </el-form-item>
-        <el-form-item label="手机号码" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号码"/>
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址"/>
-        </el-form-item>
-        <el-form-item label="详细地址" prop="detailsAddress">
-          <el-input v-model="form.detailsAddress" placeholder="请输入详细地址"/>
+        <el-form-item label="单位" prop="unit">
+          <el-select style="width: 100%" v-model="form.unit" placeholder="请选择单位">
+            <el-option
+              v-for="dict in dict.type.sys_project_unit"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注"/>
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -160,12 +169,11 @@
 </template>
 
 <script>
-import {listPatient, getPatient, delPatient, addPatient, updatePatient} from "@/api/os/patient";
-import {calculateAge} from "@/utils/web-utils";
+import {listCheckItem, getCheckItem, delCheckItem, addCheckItem, updateCheckItem} from "@/api/os/checkItem";
 
 export default {
-  name: "Patient",
-  dicts: ['sys_user_sex'],
+  name: "CheckItem",
+  dicts: ['sys_project_classification', 'sys_project_unit'],
   data() {
     return {
       // 遮罩层
@@ -180,8 +188,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 患者表格数据
-      patientList: [],
+      // 检查项目表格数据
+      checkItemList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -191,32 +199,26 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: null,
+        type: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         name: [
-          {required: true, message: "患者姓名不能为空", trigger: "blur"}
+          {required: true, message: "项目名称不能为空", trigger: "blur"}
         ],
-        sex: [
-          {required: true, message: "患者性别不能为空", trigger: "change"}
+        type: [
+          {required: true, message: "项目类别不能为空", trigger: "change"}
         ],
-        age: [
-          {required: true, message: "患者年龄不能为空", trigger: "blur"}
+        retailPrice: [
+          {required: true, message: "零售价不能为空", trigger: "blur"}
         ],
-        phone: [
-          {required: true, message: "手机号码不能为空", trigger: "blur"}
+        unit: [
+          {required: true, message: "单位不能为空", trigger: "blur"}
         ],
-        card: [
-          {required: true, message: "证件号码不能为空", trigger: "blur"},
-          {pattern: /\d{17}[\d|x]|\d{15}/, message: "请填写正确的身份证", trigger: "blur"}
-        ],
-        address: [
-          {required: true, message: "地址不能为空", trigger: "blur"}
-        ],
-        detailsAddress: [
-          {required: true, message: "详细地址不能为空", trigger: "blur"}
+        status: [
+          {required: true, message: "项目状态不能为空", trigger: "change"}
         ]
       }
     };
@@ -225,12 +227,11 @@ export default {
     this.getList();
   },
   methods: {
-    calculateAge,
-    /** 查询患者列表 */
+    /** 查询检查项目列表 */
     getList() {
       this.loading = true;
-      listPatient(this.queryParams).then(response => {
-        this.patientList = response.rows;
+      listCheckItem(this.queryParams).then(response => {
+        this.checkItemList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -243,16 +244,16 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        patientId: null,
+        checkId: null,
         name: null,
-        sex: null,
-        age: null,
-        phone: null,
-        card: null,
-        address: null,
-        detailsAddress: null,
+        type: null,
+        part: null,
+        retailPrice: null,
+        unit: null,
+        status: 0,
         remark: null,
-        belongToUser: null
+        createTime: null,
+        updateTime: null
       };
       this.resetForm("form");
     },
@@ -268,7 +269,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.patientId)
+      this.ids = selection.map(item => item.checkId)
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
@@ -276,30 +277,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加患者";
+      this.title = "添加检查项目";
     },
     /** 修改按钮操作 */
-    async handleUpdate(row) {
+    handleUpdate(row) {
       this.reset();
-      const patientId = row.patientId || this.ids
-      let response = await getPatient(patientId)
-      this.form = response.data;
-      this.open = true;
-      this.title = "修改患者";
-      this.getAge()
+      const checkId = row.checkId || this.ids
+      getCheckItem(checkId).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改检查项目";
+      });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.patientId != null) {
-            updatePatient(this.form).then(response => {
+          if (this.form.checkId != null) {
+            updateCheckItem(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addPatient(this.form).then(response => {
+            addCheckItem(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -310,9 +311,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const patientIds = row.patientId || this.ids;
-      this.$modal.confirm('是否确认删除患者编号为"' + patientIds + '"的数据项？').then(function () {
-        return delPatient(patientIds);
+      const checkIds = row.checkId || this.ids;
+      this.$modal.confirm('是否确认删除检查项目编号为"' + checkIds + '"的数据项？').then(function () {
+        return delCheckItem(checkIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -321,20 +322,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('os/patient/export', {
+      this.download('os/checkItem/export', {
         ...this.queryParams
-      }, `patient_${new Date().getTime()}.xlsx`)
-    },
-    getAge() {
-      let pattern = /\d{17}[\d|x]|\d{15}/
-      let card = this.form.card
-      if (pattern.test(card)) {
-        this.form.age = calculateAge(card)
-      }
-    },
-    handleQueryInfo(row) {
-      const patientId = row.patientId;
-      this.$router.push("/os/patient-info/" + patientId);
+      }, `checkItem_${new Date().getTime()}.xlsx`)
     }
   }
 };

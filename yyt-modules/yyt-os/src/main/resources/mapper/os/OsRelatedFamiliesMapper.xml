@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsRelatedFamiliesMapper">
+
+  <resultMap type="OsRelatedFamilies" id="OsRelatedFamiliesResult">
+    <result property="relatedId" column="related_id"/>
+    <result property="related" column="related"/>
+    <result property="patientId" column="patient_id"/>
+    <result property="relatedPatientId" column="related_patient_id"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateTime" column="update_time"/>
+    <association property="patient" column="related_patient_id"
+                 select="com.yyt.os.mapper.SysPatientMapper.selectSysPatientByPatientId"/>
+  </resultMap>
+  <resultMap type="OsRelatedFamilies" id="RelatedResult">
+    <result property="relatedId" column="related_id"/>
+    <result property="related" column="related"/>
+    <result property="patientId" column="patient_id"/>
+    <result property="relatedPatientId" column="related_patient_id"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateTime" column="update_time"/>
+    <association property="patient" column="patient_id"
+                 select="com.yyt.os.mapper.SysPatientMapper.selectSysPatientByPatientId"/>
+  </resultMap>
+
+  <sql id="selectOsRelatedFamiliesVo">
+    select related_id, related, patient_id, related_patient_id, create_time, update_time
+    from os_related_families
+  </sql>
+
+  <select id="selectOsRelatedFamiliesList" resultMap="OsRelatedFamiliesResult">
+    <include refid="selectOsRelatedFamiliesVo"/>
+    <where>
+      <if test="patientId != null">patient_id = #{patientId}</if>
+    </where>
+  </select>
+
+  <select id="selectRelatedListByPatientId" parameterType="Long" resultMap="RelatedResult">
+    <include refid="selectOsRelatedFamiliesVo"/>
+    <where>
+      <if test="patientId != null">related_patient_id = #{patientId}</if>
+    </where>
+  </select>
+
+  <select id="selectOsRelatedFamiliesByRelatedId" parameterType="Long" resultMap="OsRelatedFamiliesResult">
+    <include refid="selectOsRelatedFamiliesVo"/>
+    where related_id = #{relatedId}
+  </select>
+
+  <select id="selectOsRelatedFamiliesByRelated" resultType="OsRelatedFamilies">
+    <include refid="selectOsRelatedFamiliesVo"/>
+    WHERE related = #{related} AND patient_id = #{patientId} AND related_patient_id = #{relatedPatientId}
+  </select>
+
+  <insert id="insertOsRelatedFamilies" parameterType="OsRelatedFamilies" useGeneratedKeys="true"
+          keyProperty="relatedId">
+    insert into os_related_families
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="related != null and related != ''">related,</if>
+      <if test="patientId != null">patient_id,</if>
+      <if test="relatedPatientId != null">related_patient_id,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="related != null and related != ''">#{related},</if>
+      <if test="patientId != null">#{patientId},</if>
+      <if test="relatedPatientId != null">#{relatedPatientId},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateOsRelatedFamilies" parameterType="OsRelatedFamilies">
+    update os_related_families
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="related != null and related != ''">related = #{related},</if>
+      <if test="patientId != null">patient_id = #{patientId},</if>
+      <if test="relatedPatientId != null">related_patient_id = #{relatedPatientId},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where related_id = #{relatedId}
+  </update>
+
+  <delete id="deleteOsRelatedFamiliesByRelatedId" parameterType="Long">
+    delete
+    from os_related_families
+    where related_id = #{relatedId}
+  </delete>
+
+  <delete id="deleteOsRelatedFamiliesByRelatedIds" parameterType="String">
+    delete from os_related_families where related_id in
+    <foreach item="relatedId" collection="array" open="(" separator="," close=")">
+      #{relatedId}
+    </foreach>
+  </delete>
+</mapper>

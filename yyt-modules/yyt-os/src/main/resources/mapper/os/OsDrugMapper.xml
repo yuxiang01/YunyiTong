@@ -17,6 +17,9 @@
     <result property="isOtc" column="is_otc"/>
     <result property="usage" column="usage"/>
     <result property="dosage" column="dosage"/>
+    <result property="unit" column="unit"/>
+    <result property="total" column="total"/>
+    <result property="totalUnit" column="totalUnit"/>
     <result property="frequency" column="frequency"/>
     <result property="remark" column="remark"/>
     <result property="createBy" column="create_by"/>
@@ -36,7 +39,18 @@
            pinyin_code,
            drug_type,
            drug_dosage_form,
-           is_otc, `usage`, dosage, frequency, remark, create_by, create_time, update_by, update_time
+           total,
+           totalUnit,
+           is_otc,
+           `usage`,
+           dosage,
+           unit,
+           frequency,
+           remark,
+           create_by,
+           create_time,
+           update_by,
+           update_time
     from os_drug
   </sql>
 
@@ -44,6 +58,7 @@
     <include refid="selectOsDrugVo"/>
     <where>
       <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+      <if test="name != null  and name != ''">OR pinyin_code like concat('', #{name}, '%')</if>
       <if test="preType != null ">and pre_type = #{preType}</if>
       <if test="status != null  and status != ''">and status = #{status}</if>
       <if test="drugType != null  and drugType != ''">and drug_type = #{drugType}</if>
@@ -70,6 +85,9 @@
       <if test="isOtc != null">is_otc,</if>
       <if test="usage != null and usage != ''">`usage`,</if>
       <if test="dosage != null and dosage != ''">dosage,</if>
+      <if test="unit != null and unit != ''">unit,</if>
+      <if test="total != null and total != ''">total,</if>
+      <if test="totalUnit != null and totalUnit != ''">totalUnit,</if>
       <if test="frequency != null and frequency != ''">frequency,</if>
       <if test="remark != null">remark,</if>
       <if test="createBy != null">create_by,</if>
@@ -90,6 +108,9 @@
       <if test="isOtc != null">#{isOtc},</if>
       <if test="usage != null and usage != ''">#{usage},</if>
       <if test="dosage != null and dosage != ''">#{dosage},</if>
+      <if test="unit != null and unit != ''">#{unit},</if>
+      <if test="total != null and total != ''">#{total},</if>
+      <if test="totalUnit != null and totalUnit != ''">#{totalUnit},</if>
       <if test="frequency != null and frequency != ''">#{frequency},</if>
       <if test="remark != null">#{remark},</if>
       <if test="createBy != null">#{createBy},</if>
@@ -114,6 +135,9 @@
       <if test="isOtc != null">is_otc = #{isOtc},</if>
       <if test="usage != null and usage != ''">`usage` = #{usage},</if>
       <if test="dosage != null and dosage != ''">dosage = #{dosage},</if>
+      <if test="unit != null and unit != ''">unit = #{unit},</if>
+      <if test="total != null and total != ''">total = #{total},</if>
+      <if test="totalUnit != null and totalUnit != ''">totalUnit = #{totalUnit},</if>
       <if test="frequency != null and frequency != ''">frequency = #{frequency},</if>
       <if test="remark != null">remark = #{remark},</if>
       <if test="createBy != null">create_by = #{createBy},</if>
