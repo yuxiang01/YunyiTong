@@ -7,6 +7,7 @@
   <resultMap type="SysUser" id="SysUserResult">
     <id property="userId" column="user_id"/>
     <result property="openId" column="open_id"/>
+    <result property="doctorId" column="doctor_id"/>
     <result property="deptId" column="dept_id"/>
     <result property="userName" column="user_name"/>
     <result property="nickName" column="nick_name"/>
@@ -50,6 +51,7 @@
   <sql id="selectUserVo">
     select u.user_id,
            u.dept_id,
+           u.doctor_id,
            u.user_name,
            u.nick_name,
            u.email,
@@ -84,7 +86,8 @@
   </sql>
 
   <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-    select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status,
+    select u.user_id,u.doctor_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex,
+    u.status,
     u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
     left join sys_dept d on u.dept_id = d.dept_id
     where u.del_flag = '0'
@@ -115,7 +118,8 @@
   </select>
 
   <select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">
-    select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time
+    select distinct u.user_id,u.doctor_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status,
+    u.create_time
     from sys_user u
     left join sys_dept d on u.dept_id = d.dept_id
     left join sys_user_role ur on u.user_id = ur.user_id
@@ -132,7 +136,8 @@
   </select>
 
   <select id="selectUnallocatedList" parameterType="SysUser" resultMap="SysUserResult">
-    select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time
+    select distinct u.user_id,u.doctor_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status,
+    u.create_time
     from sys_user u
     left join sys_dept d on u.dept_id = d.dept_id
     left join sys_user_role ur on u.user_id = ur.user_id
@@ -164,21 +169,24 @@
     select user_id, user_name
     from sys_user
     where user_name = #{userName}
-      and del_flag = '0' limit 1
+      and del_flag = '0'
+    limit 1
   </select>
 
   <select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
     select user_id, phonenumber
     from sys_user
     where phonenumber = #{phonenumber}
-      and del_flag = '0' limit 1
+      and del_flag = '0'
+    limit 1
   </select>
 
   <select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
     select user_id, email
     from sys_user
     where email = #{email}
-      and del_flag = '0' limit 1
+      and del_flag = '0'
+    limit 1
   </select>
   <select id="selectUserByOpenId" resultMap="SysUserResult">
     SELECT *
@@ -186,11 +194,11 @@
     WHERE open_id = #{openId}
   </select>
 
-
   <insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
     insert into sys_user(
     <if test="userId != null and userId != 0">user_id,</if>
     <if test="deptId != null and deptId != 0">dept_id,</if>
+    <if test="doctorId != null and doctorId != 0">doctor_id,</if>
     <if test="userName != null and userName != ''">user_name,</if>
     <if test="nickName != null and nickName != ''">nick_name,</if>
     <if test="email != null and email != ''">email,</if>
@@ -206,6 +214,7 @@
     )values(
     <if test="userId != null and userId != ''">#{userId},</if>
     <if test="deptId != null and deptId != ''">#{deptId},</if>
+    <if test="doctorId != null and doctorId != 0">#{doctorId},</if>
     <if test="userName != null and userName != ''">#{userName},</if>
     <if test="nickName != null and nickName != ''">#{nickName},</if>
     <if test="email != null and email != ''">#{email},</if>
@@ -225,6 +234,7 @@
     update sys_user
     <set>
       <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+      <if test="doctorId != null and doctorId != 0">doctor_id = #{doctorId},</if>
       <if test="userName != null and userName != ''">user_name = #{userName},</if>
       <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
       <if test="email != null ">email = #{email},</if>
@@ -273,13 +283,15 @@
     </foreach>
   </delete>
 
-
   <select id="checkOpenId" resultType="com.yyt.system.api.domain.SysUser">
-    select * from sys_user where open_id=#{openId}
+    select *
+    from sys_user
+    where open_id = #{openId}
   </select>
+
   <select id="checkPhone" resultType="java.lang.Boolean">
-    select if(count(*), true, false) from sys_user where phonenumber=#{phone}
+    select if(count(*), true, false)
+    from sys_user
+    where phonenumber = #{phone}
   </select>
-
-
 </mapper>

@@ -35,10 +35,6 @@ public class OsDoctor extends BaseEntity {
   @Excel(name = "姓名")
   private String name;
 
-  /**
-   * 密码
-   */
-  private String password;
 
   /**
    * 手机号
@@ -130,14 +126,6 @@ public class OsDoctor extends BaseEntity {
 
   public String getName() {
     return name;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getPassword() {
-    return password;
   }
 
   public void setPhone(String phone) {
@@ -250,7 +238,6 @@ public class OsDoctor extends BaseEntity {
         .append("doctorId", getDoctorId())
         .append("deptId", getDeptId())
         .append("name", getName())
-        .append("password", getPassword())
         .append("phone", getPhone())
         .append("sex", getSex())
         .append("position", getPosition())

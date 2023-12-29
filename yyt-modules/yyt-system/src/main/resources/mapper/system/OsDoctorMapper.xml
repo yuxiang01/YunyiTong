@@ -8,7 +8,6 @@
     <result property="doctorId" column="doctor_id"/>
     <result property="deptId" column="dept_id"/>
     <result property="name" column="name"/>
-    <result property="password" column="password"/>
     <result property="phone" column="phone"/>
     <result property="sex" column="sex"/>
     <result property="position" column="position"/>
@@ -20,9 +19,7 @@
     <result property="intro" column="intro"/>
     <result property="areasOfExpertise" column="areas_of_expertise"/>
     <result property="dutyInfo" column="duty_info"/>
-    <result property="createBy" column="create_by"/>
     <result property="createTime" column="create_time"/>
-    <result property="updateBy" column="update_by"/>
     <result property="updateTime" column="update_time"/>
     <result property="postName" column="post_name"/>
     <result property="deptName" column="dept_name"/>
@@ -32,7 +29,6 @@
     SELECT doctor_id,
            u.dept_id,
            u.name,
-           u.password,
            u.phone,
            u.sex,
            u.position,
@@ -44,9 +40,7 @@
            u.intro,
            u.areas_of_expertise,
            u.duty_info,
-           u.create_by,
            u.create_time,
-           u.update_by,
            u.update_time,
            post_name,
            dept_name
@@ -78,7 +72,6 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="deptId != null">dept_id,</if>
       <if test="name != null and name != ''">name,</if>
-      <if test="password != null and password != ''">password,</if>
       <if test="phone != null and phone != ''">phone,</if>
       <if test="sex != null and sex != ''">sex,</if>
       <if test="position != null and position != ''">position,</if>
@@ -90,15 +83,12 @@
       <if test="intro != null and intro != ''">intro,</if>
       <if test="areasOfExpertise != null and areasOfExpertise != ''">areas_of_expertise,</if>
       <if test="dutyInfo != null and dutyInfo != ''">duty_info,</if>
-      <if test="createBy != null and createBy != ''">create_by,</if>
       <if test="createTime != null">create_time,</if>
-      <if test="updateBy != null and updateBy != ''">update_by,</if>
       <if test="updateTime != null">update_time,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="deptId != null">#{deptId},</if>
       <if test="name != null and name != ''">#{name},</if>
-      <if test="password != null and password != ''">#{password},</if>
       <if test="phone != null and phone != ''">#{phone},</if>
       <if test="sex != null and sex != ''">#{sex},</if>
       <if test="position != null and position != ''">#{position},</if>
@@ -122,7 +112,6 @@
     <trim prefix="SET" suffixOverrides=",">
       <if test="deptId != null">dept_id = #{deptId},</if>
       <if test="name != null and name != ''">name = #{name},</if>
-      <if test="password != null and password != ''">password = #{password},</if>
       <if test="phone != null and phone != ''">phone = #{phone},</if>
       <if test="sex != null and sex != ''">sex = #{sex},</if>
       <if test="position != null and position != ''">position = #{position},</if>
@@ -134,9 +123,7 @@
       <if test="intro != null and intro != ''">intro = #{intro},</if>
       <if test="areasOfExpertise != null and areasOfExpertise != ''">areas_of_expertise = #{areasOfExpertise},</if>
       <if test="dutyInfo != null and dutyInfo != ''">duty_info = #{dutyInfo},</if>
-      <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
       <if test="createTime != null">create_time = #{createTime},</if>
-      <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
       <if test="updateTime != null">update_time = #{updateTime},</if>
     </trim>
     where doctor_id = #{doctorId}

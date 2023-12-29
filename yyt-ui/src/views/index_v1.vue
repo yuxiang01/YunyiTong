@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
 
-    
+
   </div>
 </template>
 
@@ -79,7 +79,9 @@ export default {
 
 <style lang="scss" scoped>
 .dashboard-editor-container {
-  padding: 32px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 32px 32px 100px;
   background-color: rgb(240, 242, 245);
   position: relative;
 

@@ -125,6 +125,8 @@ public class SysUser extends BaseEntity {
    */
   private Long roleId;
 
+  private Integer doctorId;
+
   /**
    * wxOpenId
    */
@@ -306,6 +308,14 @@ public class SysUser extends BaseEntity {
     this.openId = openId;
   }
 
+  public Integer getDoctorId() {
+    return doctorId;
+  }
+
+  public void setDoctorId(Integer doctorId) {
+    this.doctorId = doctorId;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -329,6 +339,7 @@ public class SysUser extends BaseEntity {
         .append("remark", getRemark())
         .append("dept", getDept())
         .append("openId", getOpenId())
+        .append("doctorId", getDoctorId())
         .toString();
   }
 }

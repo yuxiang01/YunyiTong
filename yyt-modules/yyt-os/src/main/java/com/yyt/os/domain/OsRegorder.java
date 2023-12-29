@@ -53,12 +53,6 @@ public class OsRegorder extends BaseEntity {
   private String orderFee;
 
   /**
-   * 诊疗费
-   */
-  @Excel(name = "诊疗费")
-  private String fee;
-
-  /**
    * 科室
    */
   @Excel(name = "科室")
@@ -87,28 +81,8 @@ public class OsRegorder extends BaseEntity {
   @Excel(name = "就诊状态")
   private String status;
 
-  /**
-   * 实收金额
-   */
-  @Excel(name = "实收金额")
-  private BigDecimal money;
-
-  /**
-   * 支付方式
-   */
-  @Excel(name = "支付方式")
-  private String payMethod;
-
-  /**
-   * 收费日期
-   */
-  private Date payTime;
-
+  // 时间范围查询
   private Date[] queryTime;
-
-  private Date startTime;
-
-  private Date endTime;
 
   public void setRegId(String regId) {
     this.regId = regId;
@@ -142,14 +116,6 @@ public class OsRegorder extends BaseEntity {
     return orderFee;
   }
 
-  public void setFee(String fee) {
-    this.fee = fee;
-  }
-
-  public String getFee() {
-    return fee;
-  }
-
   public void setDeptId(Long deptId) {
     this.deptId = deptId;
   }
@@ -180,30 +146,6 @@ public class OsRegorder extends BaseEntity {
 
   public String getStatus() {
     return status;
-  }
-
-  public void setMoney(BigDecimal money) {
-    this.money = money;
-  }
-
-  public BigDecimal getMoney() {
-    return money;
-  }
-
-  public void setPayMethod(String payMethod) {
-    this.payMethod = payMethod;
-  }
-
-  public String getPayMethod() {
-    return payMethod;
-  }
-
-  public void setPayTime(Date payTime) {
-    this.payTime = payTime;
-  }
-
-  public Date getPayTime() {
-    return payTime;
   }
 
   public String getDeptName() {
@@ -262,22 +204,6 @@ public class OsRegorder extends BaseEntity {
     this.queryTime = queryTime;
   }
 
-  public Date getStartTime() {
-    return startTime;
-  }
-
-  public void setStartTime(Date startTime) {
-    this.startTime = startTime;
-  }
-
-  public Date getEndTime() {
-    return endTime;
-  }
-
-  public void setEndTime(Date endTime) {
-    this.endTime = endTime;
-  }
-
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -289,16 +215,12 @@ public class OsRegorder extends BaseEntity {
         .append("phone", getPhone())
         .append("type", getType())
         .append("orderFee", getOrderFee())
-        .append("fee", getFee())
         .append("deptId", getDeptId())
         .append("deptName", getDeptName())
         .append("doctorId", getDoctorId())
         .append("doctor", getDoctor())
         .append("receTime", getReceTime())
         .append("status", getStatus())
-        .append("money", getMoney())
-        .append("payMethod", getPayMethod())
-        .append("payTime", getPayTime())
         .append("queryTime", getQueryTime())
         .toString();
   }

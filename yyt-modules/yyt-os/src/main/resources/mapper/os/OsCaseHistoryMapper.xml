@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsCaseHistoryMapper">
+
+  <resultMap type="OsCaseHistory" id="OsCaseHistoryResult">
+    <result property="caseId" column="case_id"/>
+    <result property="preCode" column="pre_code"/>
+    <result property="dateOfOnset" column="date_of_onset"/>
+    <result property="activeInChief" column="active_in_chief"/>
+    <result property="hpi" column="hpi"/>
+    <result property="pastHistory" column="past_history"/>
+    <result property="allergy" column="allergy"/>
+    <result property="familyHistory" column="family_history"/>
+    <result property="idea" column="idea"/>
+    <result property="diagnosis" column="diagnosis"/>
+  </resultMap>
+
+  <sql id="selectOsCaseHistoryVo">
+    select case_id,
+           pre_code,
+           date_of_onset,
+           active_in_chief,
+           hpi,
+           past_history,
+           allergy,
+           family_history,
+           idea,
+           diagnosis
+    from os_case_history
+  </sql>
+
+  <select id="selectOsCaseHistoryList" parameterType="OsCaseHistory" resultMap="OsCaseHistoryResult">
+    <include refid="selectOsCaseHistoryVo"/>
+    <where>
+      <if test="preCode != null ">and pre_code = #{preCode}</if>
+      <if test="dateOfOnset != null ">and date_of_onset = #{dateOfOnset}</if>
+      <if test="activeInChief != null  and activeInChief != ''">and active_in_chief = #{activeInChief}</if>
+      <if test="hpi != null  and hpi != ''">and hpi = #{hpi}</if>
+      <if test="pastHistory != null  and pastHistory != ''">and past_history = #{pastHistory}</if>
+      <if test="allergy != null  and allergy != ''">and allergy = #{allergy}</if>
+      <if test="familyHistory != null  and familyHistory != ''">and family_history = #{familyHistory}</if>
+      <if test="idea != null  and idea != ''">and idea = #{idea}</if>
+    </where>
+  </select>
+
+  <select id="selectOsCaseHistoryByCaseId" parameterType="Long" resultMap="OsCaseHistoryResult">
+    <include refid="selectOsCaseHistoryVo"/>
+    where case_id = #{caseId}
+  </select>
+
+  <select id="selectOsCaseHistoryByPreCode" resultMap="OsCaseHistoryResult">
+    <include refid="selectOsCaseHistoryVo"/>
+    WHERE pre_code = #{preCode}
+  </select>
+
+  <insert id="insertOsCaseHistory" parameterType="OsCaseHistory" useGeneratedKeys="true" keyProperty="caseId">
+    insert into os_case_history
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="preCode != null">pre_code,</if>
+      <if test="dateOfOnset != null">date_of_onset,</if>
+      <if test="activeInChief != null and activeInChief != ''">active_in_chief,</if>
+      <if test="hpi != null and hpi != ''">hpi,</if>
+      <if test="pastHistory != null and pastHistory != ''">past_history,</if>
+      <if test="allergy != null and allergy != ''">allergy,</if>
+      <if test="familyHistory != null and familyHistory != ''">family_history,</if>
+      <if test="idea != null and idea != ''">idea,</if>
+      <if test="diagnosis != null and diagnosis != ''">diagnosis,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="preCode != null">#{preCode},</if>
+      <if test="dateOfOnset != null">#{dateOfOnset},</if>
+      <if test="activeInChief != null and activeInChief != ''">#{activeInChief},</if>
+      <if test="hpi != null and hpi != ''">#{hpi},</if>
+      <if test="pastHistory != null and pastHistory != ''">#{pastHistory},</if>
+      <if test="allergy != null and allergy != ''">#{allergy},</if>
+      <if test="familyHistory != null and familyHistory != ''">#{familyHistory},</if>
+      <if test="idea != null and idea != ''">#{idea},</if>
+      <if test="diagnosis != null and diagnosis != ''">#{diagnosis},</if>
+    </trim>
+  </insert>
+
+  <update id="updateOsCaseHistory" parameterType="OsCaseHistory">
+    update os_case_history
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="preCode != null">pre_code = #{preCode},</if>
+      <if test="dateOfOnset != null">date_of_onset = #{dateOfOnset},</if>
+      <if test="activeInChief != null and activeInChief != ''">active_in_chief = #{activeInChief},</if>
+      <if test="hpi != null and hpi != ''">hpi = #{hpi},</if>
+      <if test="pastHistory != null and pastHistory != ''">past_history = #{pastHistory},</if>
+      <if test="allergy != null and allergy != ''">allergy = #{allergy},</if>
+      <if test="familyHistory != null and familyHistory != ''">family_history = #{familyHistory},</if>
+      <if test="idea != null and idea != ''">idea = #{idea},</if>
+      <if test="diagnosis != null and diagnosis != ''">diagnosis = #{diagnosis},</if>
+    </trim>
+    where case_id = #{caseId}
+  </update>
+
+  <delete id="deleteOsCaseHistoryByCaseId" parameterType="Long">
+    delete
+    from os_case_history
+    where case_id = #{caseId}
+  </delete>
+
+  <delete id="deleteOsCaseHistoryByCaseIds" parameterType="String">
+    delete from os_case_history where case_id in
+    <foreach item="caseId" collection="array" open="(" separator="," close=")">
+      #{caseId}
+    </foreach>
+  </delete>
+</mapper>

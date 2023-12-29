@@ -66,4 +66,6 @@ public interface IOsRegorderService {
    * @return
    */
   public Integer findDoctorRegCountByDoctorId(String doctorId);
+
+  int receiveOsRegorder(OsRegorder osRegorder);
 }

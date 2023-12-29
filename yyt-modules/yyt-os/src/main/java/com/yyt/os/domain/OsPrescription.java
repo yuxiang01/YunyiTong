@@ -2,6 +2,7 @@ package com.yyt.os.domain;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.yyt.common.core.annotation.Excel;
@@ -11,7 +12,7 @@ import com.yyt.common.core.web.domain.BaseEntity;
  * 处方对象 os_prescription
  *
  * @author yyt
- * @date 2023-12-18
+ * @date 2023-12-21
  */
 public class OsPrescription extends BaseEntity {
   private static final long serialVersionUID = 1L;
@@ -33,9 +34,11 @@ public class OsPrescription extends BaseEntity {
   @Excel(name = "项目编号")
   private Long checkId;
 
-  // 检查部位
+  /**
+   * 检查部位
+   */
+  @Excel(name = "检查部位")
   private String part;
-
 
   /**
    * 药品编号
@@ -53,19 +56,26 @@ public class OsPrescription extends BaseEntity {
    * 单价
    */
   @Excel(name = "单价")
+  @JsonFormat(shape = JsonFormat.Shape.STRING)
   private BigDecimal unitPrice;
-
-  /**
-   * 总量
-   */
-  @Excel(name = "总量")
-  private Long total;
 
   /**
    * 单位
    */
   @Excel(name = "单位")
   private String unit;
+
+  /**
+   * 总量
+   */
+  @Excel(name = "总量")
+  private Integer total;
+
+  /**
+   * 总量单位
+   */
+  @Excel(name = "总量单位")
+  private String totalUnit;
 
   /**
    * 类型
@@ -91,7 +101,6 @@ public class OsPrescription extends BaseEntity {
   @Excel(name = "频度")
   private String frequency;
 
-
   public void setPreId(Long preId) {
     this.preId = preId;
   }
@@ -114,6 +123,14 @@ public class OsPrescription extends BaseEntity {
 
   public Long getCheckId() {
     return checkId;
+  }
+
+  public void setPart(String part) {
+    this.part = part;
+  }
+
+  public String getPart() {
+    return part;
   }
 
   public void setDrugId(Long drugId) {
@@ -140,20 +157,28 @@ public class OsPrescription extends BaseEntity {
     return unitPrice;
   }
 
-  public void setTotal(Long total) {
-    this.total = total;
-  }
-
-  public Long getTotal() {
-    return total;
-  }
-
   public void setUnit(String unit) {
     this.unit = unit;
   }
 
   public String getUnit() {
     return unit;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
+  }
+
+  public Integer getTotal() {
+    return total;
+  }
+
+  public void setTotalUnit(String totalUnit) {
+    this.totalUnit = totalUnit;
+  }
+
+  public String getTotalUnit() {
+    return totalUnit;
   }
 
   public void setType(Long type) {
@@ -188,14 +213,6 @@ public class OsPrescription extends BaseEntity {
     return frequency;
   }
 
-  public String getPart() {
-    return part;
-  }
-
-  public void setPart(String part) {
-    this.part = part;
-  }
-
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -206,8 +223,9 @@ public class OsPrescription extends BaseEntity {
         .append("drugId", getDrugId())
         .append("name", getName())
         .append("unitPrice", getUnitPrice())
-        .append("total", getTotal())
         .append("unit", getUnit())
+        .append("total", getTotal())
+        .append("totalUnit", getTotalUnit())
         .append("type", getType())
         .append("dosage", getDosage())
         .append("usage", getUsage())

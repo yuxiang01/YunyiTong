@@ -174,8 +174,7 @@
             width="160"
             class-name="small-padding fixed-width"
           >
-            //v-if="scope.row.userId !== 1">
-            <template slot-scope="scope">
+            <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button
                 size="mini"
                 type="text"
@@ -223,25 +222,32 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30"/>
+            <el-form-item label="绑定医生" prop="doctorId">
+              <el-select v-model="form.doctorId" placeholder="请选择医生" @change="selectDoctor">
+                <el-option
+                  v-for="dict in doctorList"
+                  :key="dict.doctorId"
+                  :label="dict.name"
+                  :value="dict.doctorId"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
+            <el-form-item label="用户昵称" prop="nickName">
+              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
+            <el-form-item label="归属部门" prop="deptId">
+              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50"/>
+            <el-form-item label="手机号码" prop="phonenumber">
+              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -375,6 +381,7 @@ import {
 import {getToken} from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {listDoctor} from "@/api/system/doctor";
 
 export default {
   name: "User",
@@ -452,6 +459,7 @@ export default {
         {key: 5, label: `状态`, visible: true},
         {key: 6, label: `创建时间`, visible: true}
       ],
+      doctorList: [],
       // 表单校验
       rules: {
         userName: [
@@ -497,14 +505,19 @@ export default {
   },
   methods: {
     /** 查询用户列表 */
-    getList() {
+    async getList() {
       this.loading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        }
-      );
+      let response = await listUser(this.addDateRange(this.queryParams, this.dateRange))
+      this.userList = response.rows;
+      this.total = response.total;
+      this.loading = false;
+      listDoctor().then(({rows}) => {
+        this.userList.forEach(user => {
+          console.log(user);
+          rows = rows.filter(doctor => doctor.doctorId !== user.doctorId)
+        })
+        this.doctorList = rows
+      })
     },
     /** 查询部门下拉树结构 */
     getDeptTree() {
@@ -516,6 +529,17 @@ export default {
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
+    },
+    // 下拉框选中医生事件
+    selectDoctor(value) {
+      let doctor = this.doctorList.find(i => i.doctorId === value);
+      this.form.sex = doctor.sex
+      this.form.deptId = doctor.deptId
+      this.form.userName = doctor.name
+      this.form.phonenumber = doctor.phone
+      this.form.nickName = doctor.name.substr(0, 1) + '医生'
+      this.form.postIds = [5]
+      this.form.roleIds = [2]
     },
     // 节点单击事件
     handleNodeClick(data) {
@@ -543,6 +567,7 @@ export default {
       this.form = {
         userId: undefined,
         deptId: undefined,
+        doctorId: undefined,
         userName: undefined,
         nickName: undefined,
         password: undefined,

@@ -91,6 +91,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-search"
+            @click="handleQueryInfo(scope.row)"
+            v-hasPermi="['os:regorder:add']"
+          >接诊
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['os:patient:edit']"
@@ -161,7 +169,7 @@
 
 <script>
 import {listPatient, getPatient, delPatient, addPatient, updatePatient} from "@/api/os/patient";
-import {calculateAge} from "@/utils/web-utils";
+import {calculateAge, getEncode} from "@/utils/web-utils";
 
 export default {
   name: "Patient",
@@ -334,7 +342,7 @@ export default {
     },
     handleQueryInfo(row) {
       const patientId = row.patientId;
-      this.$router.push("/os/patient-info/" + patientId);
+      this.$router.push("/os/patient-info/" + getEncode(patientId));
     }
   }
 };

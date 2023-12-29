@@ -77,6 +77,13 @@ public class OsRegorderController extends BaseController {
     return toAjax(osRegorderService.insertOsRegorder(osRegorder));
   }
 
+  @RequiresPermissions("os:regorder:add")
+  @Log(title = "接诊", businessType = BusinessType.INSERT)
+  @PostMapping("/receive")
+  public AjaxResult receive(@RequestBody OsRegorder osRegorder) {
+    return toAjax(osRegorderService.receiveOsRegorder(osRegorder));
+  }
+
   /**
    * 修改挂号订单
    */
@@ -104,7 +111,7 @@ public class OsRegorderController extends BaseController {
    * @return
    */
   @GetMapping("/findDoctorRegCountByDoctorId")
-  public AjaxResult findDoctorRegCountByDoctorId(String doctorId){
+  public AjaxResult findDoctorRegCountByDoctorId(String doctorId) {
     return success(osRegorderService.findDoctorRegCountByDoctorId(doctorId));
   }
 }

@@ -107,8 +107,7 @@ export default {
           data: expectedData,
           animationDuration: 2800,
           animationEasing: 'cubicInOut'
-        },
-        {
+        }, {
           name: 'actual',
           smooth: true,
           type: 'line',

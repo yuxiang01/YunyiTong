@@ -40,8 +40,7 @@ export default {
         pageSize: 10,
         deptId: null,
         doctorId: null,
-        receTime: null,
-        payMethod: null,
+        patient: null
       },
       // 表单参数
       form: {},
@@ -78,6 +77,10 @@ export default {
       this.form.doctorId = doctorId
       this.form.orderFee = this.doctorList.filter(i => i.doctorId === doctorId)[0].cost
     },
+    queryChange(value) {
+      this.queryParams.deptId = value[0]
+      this.queryParams.doctorId = value[1]
+    },
     /** 查询挂号订单列表 */
     async getList() {
       this.loading = true;
@@ -102,14 +105,10 @@ export default {
         patientId: null,
         type: null,
         orderFee: null,
-        fee: null,
         deptId: null,
         doctorId: null,
         receTime: null,
-        status: null,
-        money: null,
-        payMethod: null,
-        payTime: null
+        status: null
       };
       this.resetForm("form");
     },
@@ -120,6 +119,13 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+        deptId: null,
+        doctorId: null,
+        patient: null
+      }
       this.resetForm("queryForm");
       this.handleQuery();
     },
@@ -191,33 +197,15 @@ export default {
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="科室" prop="deptId">
-        <el-input
-          v-model="queryParams.deptId"
-          placeholder="请输入科室"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="接诊医生" prop="doctorId">
-        <el-input
-          v-model="queryParams.doctorId"
-          placeholder="请输入接诊医生"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-cascader v-model="queryParams.doctorId" clearable
+                     :options="cascadeList"
+                     :props="{ expandTrigger: 'hover' }"
+                     @change="queryChange" placeholder="请选择接诊医生"/>
       </el-form-item>
-      <el-form-item label="就诊时间" prop="receTime">
-        <el-date-picker clearable
-                        v-model="queryParams.receTime"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        placeholder="请选择就诊时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="患者名称" prop="payMethod">
+      <el-form-item label="患者名称" prop="patient">
         <el-input
-          v-model="queryParams.payMethod"
+          v-model="queryParams.patient"
           placeholder="请输入患者名称"
           clearable
           @keyup.enter.native="handleQuery"
@@ -288,7 +276,6 @@ export default {
           <dict-tag :options="dict.type.sys_reception_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
-      <el-table-column label="诊疗费" align="center" prop="fee"/>
       <el-table-column label="科室" align="center" prop="deptName"/>
       <el-table-column label="接诊医生" align="center" prop="doctor"/>
       <el-table-column label="就诊时间" align="center" prop="receTime" width="180">
@@ -301,8 +288,6 @@ export default {
           <dict-tag :options="dict.type.sys_visit_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="实收金额" align="center" prop="money"/>
-      <el-table-column label="支付方式" align="center" prop="payMethod"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -361,8 +346,7 @@ export default {
           <el-cascader v-model="form.doctorId"
                        :options="cascadeList"
                        :props="{ expandTrigger: 'hover' }"
-                       @change="handleChange" placeholder="请选择接诊医生"
-                       :style="{width: '100%'}"/>
+                       @change="handleChange" placeholder="请选择接诊医生"/>
         </el-form-item>
         <el-form-item label="挂单费用" prop="orderFee">
           <el-input v-model="form.orderFee" readonly placeholder="请先选择接诊医生"/>
@@ -385,25 +369,6 @@ export default {
             ></el-option>
           </el-select>
         </el-form-item>
-        <template v-if="form.status !== '0'">
-          <el-form-item label="总诊疗费" prop="fee">
-            <el-input v-model="form.fee" readonly/>
-          </el-form-item>
-          <el-form-item label="实收金额" prop="money">
-            <el-input v-model="form.money" placeholder="请输入实收金额"/>
-          </el-form-item>
-          <el-form-item label="支付方式" prop="payMethod">
-            <el-input v-model="form.payMethod" placeholder="请输入支付方式"/>
-          </el-form-item>
-          <el-form-item label="收费日期" prop="payTime">
-            <el-date-picker clearable
-                            v-model="form.payTime"
-                            type="date"
-                            value-format="yyyy-MM-dd"
-                            placeholder="请选择收费日期">
-            </el-date-picker>
-          </el-form-item>
-        </template>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -417,6 +382,10 @@ export default {
 /deep/ .el-select-dropdown__item {
   height: 70px !important;
   line-height: 70px !important;
+}
+
+/deep/ .el-form .el-input {
+  width: 225px;
 }
 </style>
 

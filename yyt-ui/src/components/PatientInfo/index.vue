@@ -1,10 +1,10 @@
 <script>
 import PatentSelected from "@/components/PatentSelected/index.vue";
-import {commonDictFormat} from "@/utils/web-utils";
+import {calculateAge, commonDictFormat} from "@/utils/web-utils";
 
 export default {
   name: "patientBaseInfo",
-  methods: {commonDictFormat},
+  methods: {calculateAge, commonDictFormat},
   components: {PatentSelected},
   dicts: ['sys_user_sex'],
   props: {
@@ -33,7 +33,7 @@ export default {
                   :style="{width: '100%'}" readonly/>
       </el-form-item>
       <el-form-item label="患者年龄" prop="age">
-        <el-input v-model="form.age" placeholder="请输入患者年龄" :style="{width: '100%'}" readonly/>
+        <el-input :value="calculateAge(form.card)" placeholder="请输入患者年龄" :style="{width: '100%'}" readonly/>
       </el-form-item>
       <el-form-item label="证件号码" prop="card">
         <el-input v-model="form.card" placeholder="请输入证件号码" :maxlength="18"

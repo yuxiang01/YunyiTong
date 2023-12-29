@@ -169,9 +169,6 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" maxlength="20" show-password placeholder="请输入密码"/>
-        </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号"/>
         </el-form-item>
@@ -292,9 +289,6 @@ export default {
         name: [
           {required: true, message: "姓名不能为空", trigger: "blur"}
         ],
-        password: [
-          {required: true, message: "密码不能为空", trigger: "blur"}
-        ],
         phone: [
           {required: true, message: "手机号不能为空", trigger: "blur"}
         ],
@@ -325,14 +319,8 @@ export default {
         dutyInfo: [
           {required: true, message: "值班信息不能为空", trigger: "blur"}
         ],
-        createBy: [
-          {required: true, message: "创建人不能为空", trigger: "blur"}
-        ],
         createTime: [
           {required: true, message: "创建时间不能为空", trigger: "blur"}
-        ],
-        updateBy: [
-          {required: true, message: "修改人不能为空", trigger: "blur"}
         ],
         updateTime: [
           {required: true, message: "修改时间不能为空", trigger: "blur"}
@@ -368,7 +356,6 @@ export default {
         doctorId: null,
         deptId: null,
         name: null,
-        password: null,
         phone: null,
         sex: null,
         position: null,
@@ -380,9 +367,7 @@ export default {
         intro: null,
         areasOfExpertise: null,
         dutyInfo: null,
-        createBy: null,
         createTime: null,
-        updateBy: null,
         updateTime: null
       };
       this.resetForm("form");

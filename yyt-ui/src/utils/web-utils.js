@@ -34,6 +34,9 @@ export function doctorsToMap(doctors) {
  * @return {number} age
  */
 export function calculateAge(idNumber) {
+  let pattern = /\d{17}[\d|x]|\d{15}/
+  if (!pattern.test(idNumber)) return 0
+
   // 获取生日
   const birthday = idNumber.substr(6, 8);
   const birthDate = dayjs(birthday, 'YYYYMMDD');

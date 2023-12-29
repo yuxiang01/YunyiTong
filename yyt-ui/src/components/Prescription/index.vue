@@ -12,7 +12,11 @@ export default {
     'sys_drug_classification', 'sys_unit_unit', 'sys_project_classification',
     'sys_frequentness_frequentness', 'sys_china_drug'
   ],
-  props: ['doctorId', 'tableHight'],
+  props: {
+    doctor: String,
+    tableHight: Number,
+    preDataList: Array
+  },
   data() {
     return {
       loading: true,
@@ -43,7 +47,6 @@ export default {
       tableData: [],
       currentPreTotal: "0.00",
       allPreTotal: "0.00",
-      doctor: null,
     }
   },
   watch: {
@@ -85,8 +88,22 @@ export default {
       },
       deep: true
     },
-    doctorId() {
-      this.doctor = this.doctorId
+    preDataList: {
+      // deep: true,
+      handler(newVal) {
+        if (newVal.length <= 0) return
+        let preList = []
+        for (let i = 0; i <= 3; i++) {
+          let key = `preform_${i}`
+          this[key] = newVal.filter(item => item.type === i)
+          if (this[key].length > 0) preList.push(i + '')
+        }
+        this.preList = preList
+        this.currentPre = preList[0]
+        this.extracted()
+      },
+      // 这里增加了一个immediate属性，说明监听到props传参后立即先去执行handler方法
+      //immediate: true,
     }
   },
   created() {
@@ -139,16 +156,8 @@ export default {
         })
         .catch(err => console.log(err));
     },
-    preTypeFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_prescription_type, row);
-    },
-    handleChange(value) {
-      let deptId = value[0]
-      let doctorId = value[1]
-      // 赋值该医生的挂号费
-      // this.form.deptId = deptId
-      // this.form.doctorId = doctorId
-      // this.form.orderFee = this.doctorList.filter(i => i.doctorId === doctorId)[0].cost
+    preTypeFormat(row) {
+      return this.commonDictFormat('sys_prescription_type', row);
     },
     // 重新赋值，表格显示的数据
     extracted() {
@@ -163,7 +172,6 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      // selection.map(item => item.drugId)
       this.ids = selection
     },
     addItem() {
@@ -174,8 +182,15 @@ export default {
       let key = `preform_${this.currentPre}`
       this.ids.forEach(i => {
         let obj = this.assignmentRecipe(i)
+        console.log(obj);
         obj.index = this[key][this[key].length - 1]?.index + 1 || 1
-        this[key].push(obj)
+        this[key].forEach(item => {
+          if (item.name === obj.name) {
+            item.dosage++
+          } else {
+            this[key].push(obj)
+          }
+        })
       })
       this.tableData = this[key]
     },
@@ -185,13 +200,11 @@ export default {
     handleDeletePrescription(scope) {
       let that = this
       let title = `确认删除【${that.preTypeFormat(scope.row.type)}】下序号【${scope.$index + 1}】信息吗？`
-      this.$modal.confirm(title)
-        .then(() => {
-            let key = `preform_${that.currentPre}`
-            that[key] = that[key].filter(i => i.index !== scope.row.index)
-            that.extracted()
-          }
-        )
+      this.$modal.confirm(title).then(() => {
+        let key = `preform_${that.currentPre}`
+        that[key] = that[key].filter(i => i.index !== scope.row.index)
+        that.extracted()
+      })
         .then(() => this.$modal.msgSuccess("删除成功"))
         .catch((err) => console.log(err));
     },
@@ -251,8 +264,22 @@ export default {
       }
       this.currentPre = '3'
       this.extracted()
+    },
+    saveEvent() {
+      let data = this.mergeFn()
+      this.$emit('savePre', data)
+    },
+    finish() {
+      this.$emit('finish')
+    },
+    charge() {
+      this.$emit('charge')
+    },
+    // 合并
+    mergeFn() {
+      return [...this.preform_0, ...this.preform_1, ...this.preform_2, ...this.preform_3]
     }
-  },
+  }
 }
 </script>
 
@@ -282,7 +309,7 @@ export default {
           </div>
         </div>
         <div class="prescription">
-          <h1 style="padding: 5px;">Rp</h1>
+          <h1 class="h_title" style="padding: 5px;">Rp</h1>
           <el-table border v-if="currentPre < 2" :data="tableData" :height="tableHight" style="width: 100%">
             <el-table-column align="center" label="序号" width="50">
               <template #default="scope">{{ scope.$index + 1 }}</template>
@@ -335,7 +362,7 @@ export default {
                 </div>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="单价" prop="unitPrice" width="85">
+            <el-table-column align="center" label="单价" prop="unitPrice" width="100">
               <template slot-scope="scope">
                 <div class="flex-ver-center">
                   ￥
@@ -435,11 +462,8 @@ export default {
           <div class="footer">
             <el-button @click="extraCharge" type="success" icon="el-icon-edit">附加费用</el-button>
             <div class="doctor">
-              接诊医生
-              <el-cascader :options="cascadeList" v-model="doctor"
-                           :props="{ expandTrigger: 'hover' }"
-                           @change="handleChange" placeholder="请选择接诊医生"
-                           :style="{width: '160px'}"/>
+              接诊医生:
+              <el-tag effect="plain" style="margin-left: 5px">{{ doctor }}</el-tag>
             </div>
             <div class="total">
               此方合计：<span class="blod_span">{{ currentPreTotal }}</span> 元；
@@ -537,9 +561,9 @@ export default {
           </el-table-column>
         </el-table>
         <div class="footer flex-ver-center">
-          <el-button type="primary" icon="el-icon-box">保存</el-button>
-          <el-button type="warning" icon="el-icon-coin">收费</el-button>
-          <el-button type="warning" icon="el-icon-switch-button">结束问诊</el-button>
+          <el-button @click="saveEvent" type="primary" icon="el-icon-box">保存</el-button>
+          <el-button @click="charge" type="warning" icon="el-icon-coin">收费</el-button>
+          <el-button @click="finish" type="warning" icon="el-icon-switch-button">结束问诊</el-button>
         </div>
       </div>
     </div>
@@ -557,20 +581,14 @@ export default {
   font-weight: 400 !important;
 }
 
-.el-tag {
+.body-header .el-tag {
   cursor: pointer;
 }
 
-.el-tag:hover, .active {
+.body-header .el-tag:hover, .active {
   background-color: #e8f4ff;
   border-color: #d1e9ff;
   color: #1890ff;
-}
-
-.body-center {
-  margin-top: 10px;
-  padding-bottom: 6px;
-  display: flex;
 }
 
 .body-center .left {
@@ -586,15 +604,6 @@ export default {
   margin-left: 10px;
   width: 0;
   flex: 35%;
-}
-
-h1 {
-  margin: 10px;
-  font-family: "思源黑体 CN Bold", "思源黑体 CN Regular", "思源黑体 CN";
-  font-weight: 700;
-  font-style: normal;
-  font-size: 24px;
-  color: rgb(102, 110, 232);
 }
 
 .item_list .opt {

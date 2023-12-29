@@ -193,7 +193,60 @@ aside {
   align-items: center
 }
 
+.flex_sides {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+}
+
 .blod_span {
   color: red;
   font-weight: bold;
+}
+
+.body-center {
+  margin-top: 10px;
+  padding-bottom: 6px;
+  display: flex;
+}
+
+.h_title {
+  margin: 10px 0;
+  font-family: "思源黑体 CN Bold", "思源黑体 CN Regular", "思源黑体 CN";
+  font-weight: 700;
+  font-style: normal;
+  color: rgb(102, 110, 232);
+}
+
+/* 退单状态 */
+.tag {
+  padding: 5px 8px;
+  border-radius: 1rem;
+  color: #FFF;
+  background-color: rgba(204, 204, 204, 1);
+  font-size: 12px;
+}
+
+/* 待接诊状态 */
+.tag-0 {
+  background-color: rgba(255, 98, 98, 1);
+}
+
+/* 问诊中 */
+.tag-1 {
+  background-color: #409EFF;
+}
+
+/* 待支付 */
+.tag-2 {
+  background-color: #E6A23C;
+}
+
+/* 已完成状态 */
+.tag-3 {
+  background-color: #67C23A;
+}
+
+.tag-4 {
+  background-color: #F56C6C;
 }

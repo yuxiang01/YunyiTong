@@ -81,6 +81,7 @@
 <script>
 import {listRegorder} from "@/api/os/regorder";
 import {calculateTime, getEncode} from "@/utils/web-utils";
+import {getInfo} from "@/api/login";
 
 export default {
   props: [],
@@ -110,25 +111,25 @@ export default {
           {
             text: '最近一周',
             onClick(picker) {
-              picker.$emit('pick', calculateTime(7));
+              picker.$emit('pick', calculateTime(0, 0, 'week'));
             }
           },
           {
             text: '最近两周',
             onClick(picker) {
-              picker.$emit('pick', calculateTime(14));
+              picker.$emit('pick', calculateTime(1, 0, 'week'));
             }
           },
           {
             text: '最近一个月',
             onClick(picker) {
-              picker.$emit('pick', calculateTime(30));
+              picker.$emit('pick', calculateTime(0, 0, 'month'));
             }
           },
           {
             text: '最近三个月',
             onClick(picker) {
-              picker.$emit('pick', calculateTime(90));
+              picker.$emit('pick', calculateTime(2, 0, 'month'));
             }
           }
         ]
@@ -160,6 +161,10 @@ export default {
   },
   methods: {
     getList() {
+      let doctorId = this.$store.getters.doctorId;
+      if (doctorId && doctorId !== '' && doctorId !== null) {
+        this.form.doctorId = doctorId
+      }
       listRegorder(this.form).then(response => {
         this.regorderList = response.rows;
         this.total = response.total;
@@ -201,9 +206,16 @@ export default {
 }
 
 .list {
-  padding: 5px 10px 120px 10px;
+  padding: 5px 10px 10px 10px;
   overflow-y: auto;
   height: 75%;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.list::-webkit-scrollbar {
+  display: none;
 }
 
 .cart_list {
@@ -239,25 +251,6 @@ export default {
 .cart_content .right-col-1 {
   justify-content: space-between;
   align-items: center
-}
-
-/* 退单状态 */
-.tag {
-  padding: 5px 8px;
-  border-radius: 1rem;
-  color: #FFF;
-  background-color: rgba(204, 204, 204, 1);
-  font-size: 12px;
-}
-
-/* 待接诊状态 */
-.tag-0 {
-  background-color: rgba(255, 98, 98, 1);
-}
-
-/* 问诊中、已完成状态 */
-.tag-1, .tag-2 {
-  background-color: rgba(40, 208, 148, 1);
 }
 
 .cart_footer {

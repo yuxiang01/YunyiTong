@@ -1,5 +1,5 @@
 <template>
-  <div class="patient_info">
+  <div class="patient_info" v-if="labelPosition === 'left'">
     <div class="base_info">
       <div class="top">
         <h1>基本信息</h1>
@@ -111,6 +111,8 @@
       </div>
     </el-dialog>
   </div>
+  <CaseOnline :table-data="preList" @switch="switchEvent" v-else-if="labelPosition === 'right'"/>
+  <Records :table-data="preList" @switch="switchEvent" v-else/>
 </template>
 
 <script>
@@ -119,10 +121,13 @@ import {addFamilies, delFamilies, getFamilies, listFamilies, updateFamilies} fro
 import {calculateAge, getDecode, getEncode} from "@/utils/web-utils";
 import PatentSelected from "@/components/PatentSelected/index.vue";
 import PatientBaseInfo from "@/components/PatientInfo/index.vue";
+import CaseOnline from "@/views/os/patient/caseOnline.vue";
+import Records from "@/views/os/patient/records.vue";
+import {listOrder} from "@/api/os/recipe";
 
 export default {
   name: "patientInfo",
-  components: {PatientBaseInfo, PatentSelected},
+  components: {Records, CaseOnline, PatientBaseInfo, PatentSelected},
   dicts: ['sys_user_sex', 'os_family_relationship'],
   data() {
     return {
@@ -151,6 +156,7 @@ export default {
       open: false,
       // 患者列表
       patientList: [],
+      preList: [],
       patientId: null,
       // 表单校验
       rules: {
@@ -178,6 +184,7 @@ export default {
       })
       listFamilies({"patientId": this.patientId}).then(res => this.tableData = res.rows)
       listPatient().then(res => this.patientList = res.rows)
+      listOrder({patientId: this.patientId}).then(res => this.preList = res.rows)
     },
     reset() {
       this.relatedForm = {
@@ -245,6 +252,10 @@ export default {
       }).catch(() => {
       });
     },
+    // 切换
+    switchEvent(newVal) {
+      this.labelPosition = newVal
+    }
   }
 }
 </script>
@@ -281,6 +292,7 @@ export default {
 .base_info .top {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .association {

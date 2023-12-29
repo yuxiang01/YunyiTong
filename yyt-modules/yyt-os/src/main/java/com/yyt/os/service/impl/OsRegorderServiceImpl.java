@@ -6,7 +6,9 @@ import java.util.List;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.mysql.cj.util.TimeUtil;
+import com.yyt.os.service.ISysPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.yyt.os.mapper.OsRegorderMapper;
@@ -43,11 +45,6 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
    */
   @Override
   public List<OsRegorder> selectOsRegorderList(OsRegorder osRegorder) {
-    Date[] queryTime = osRegorder.getQueryTime();
-    if (queryTime != null && queryTime.length == 2) {
-      osRegorder.setStartTime(queryTime[0]);
-      osRegorder.setEndTime(queryTime[1]);
-    }
     return osRegorderMapper.selectOsRegorderList(osRegorder);
   }
 
@@ -58,7 +55,7 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
    * @return 结果
    */
   @Override
-  public int insertOsRegorder(OsRegorder osRegorder) {
+  public synchronized int insertOsRegorder(OsRegorder osRegorder) {
     String orderId = osRegorderMapper.lastRowOrderId();
     String prefix = "os" + DateUtil.format(new Date(), "yyyyMMddHHmm");
     if (StrUtil.isNotEmpty(orderId)) {
@@ -110,5 +107,13 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
   @Override
   public Integer findDoctorRegCountByDoctorId(String doctorId) {
     return osRegorderMapper.findDoctorRegCountByDoctorId(doctorId);
+  }
+
+  // TODO: 接诊逻辑待完成
+  @Override
+  public int receiveOsRegorder(OsRegorder osRegorder) {
+    // patientService.selectSysPatientByPatientId(osRegorder.getPatientId())
+    String result1= HttpUtil.get("https://www.baidu.com");
+    return 0;
   }
 }

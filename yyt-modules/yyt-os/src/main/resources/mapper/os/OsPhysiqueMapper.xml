@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyt.os.mapper.OsPhysiqueMapper">
+
+  <resultMap type="OsPhysique" id="OsPhysiqueResult">
+    <result property="physiqueId" column="physique_id"/>
+    <result property="preCode" column="pre_code"/>
+    <result property="temp" column="temp"/>
+    <result property="rate" column="rate"/>
+    <result property="pulse" column="pulse"/>
+    <result property="systolicBloodPressure" column="systolic_blood_pressure"/>
+    <result property="diastolicBloodPressure" column="diastolic_blood_pressure"/>
+    <result property="height" column="height"/>
+    <result property="weight" column="weight"/>
+    <result property="bloodSugar" column="blood_sugar"/>
+    <result property="bloodLipid" column="blood_lipid"/>
+  </resultMap>
+
+  <sql id="selectOsPhysiqueVo">
+    select physique_id,
+           pre_code,
+           temp,
+           rate,
+           pulse,
+           systolic_blood_pressure,
+           diastolic_blood_pressure,
+           height,
+           weight,
+           blood_sugar,
+           blood_lipid
+    from os_physique
+  </sql>
+
+  <select id="selectOsPhysiqueList" parameterType="OsPhysique" resultMap="OsPhysiqueResult">
+    <include refid="selectOsPhysiqueVo"/>
+    <where>
+      <if test="preCode != null ">and pre_code = #{preCode}</if>
+      <if test="temp != null ">and temp = #{temp}</if>
+      <if test="rate != null ">and rate = #{rate}</if>
+      <if test="pulse != null ">and pulse = #{pulse}</if>
+      <if test="systolicBloodPressure != null ">and systolic_blood_pressure = #{systolicBloodPressure}</if>
+      <if test="diastolicBloodPressure != null ">and diastolic_blood_pressure = #{diastolicBloodPressure}</if>
+      <if test="height != null ">and height = #{height}</if>
+      <if test="weight != null ">and weight = #{weight}</if>
+      <if test="bloodSugar != null ">and blood_sugar = #{bloodSugar}</if>
+      <if test="bloodLipid != null ">and blood_lipid = #{bloodLipid}</if>
+    </where>
+  </select>
+
+  <select id="selectOsPhysiqueByPhysiqueId" parameterType="Long" resultMap="OsPhysiqueResult">
+    <include refid="selectOsPhysiqueVo"/>
+    where physique_id = #{physiqueId}
+  </select>
+  <select id="selectOsPhysiqueByPreCode" resultMap="OsPhysiqueResult">
+    <include refid="selectOsPhysiqueVo"/>
+    where pre_code = #{preCode}
+  </select>
+
+  <insert id="insertOsPhysique" parameterType="OsPhysique" useGeneratedKeys="true" keyProperty="physiqueId">
+    insert into os_physique
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="preCode != null">pre_code,</if>
+      <if test="temp != null">temp,</if>
+      <if test="rate != null">rate,</if>
+      <if test="pulse != null">pulse,</if>
+      <if test="systolicBloodPressure != null">systolic_blood_pressure,</if>
+      <if test="diastolicBloodPressure != null">diastolic_blood_pressure,</if>
+      <if test="height != null">height,</if>
+      <if test="weight != null">weight,</if>
+      <if test="bloodSugar != null">blood_sugar,</if>
+      <if test="bloodLipid != null">blood_lipid,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="preCode != null">#{preCode},</if>
+      <if test="temp != null">#{temp},</if>
+      <if test="rate != null">#{rate},</if>
+      <if test="pulse != null">#{pulse},</if>
+      <if test="systolicBloodPressure != null">#{systolicBloodPressure},</if>
+      <if test="diastolicBloodPressure != null">#{diastolicBloodPressure},</if>
+      <if test="height != null">#{height},</if>
+      <if test="weight != null">#{weight},</if>
+      <if test="bloodSugar != null">#{bloodSugar},</if>
+      <if test="bloodLipid != null">#{bloodLipid},</if>
+    </trim>
+  </insert>
+
+  <update id="updateOsPhysique" parameterType="OsPhysique">
+    update os_physique
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="preCode != null">pre_code = #{preCode},</if>
+      <if test="temp != null">temp = #{temp},</if>
+      <if test="rate != null">rate = #{rate},</if>
+      <if test="pulse != null">pulse = #{pulse},</if>
+      <if test="systolicBloodPressure != null">systolic_blood_pressure = #{systolicBloodPressure},</if>
+      <if test="diastolicBloodPressure != null">diastolic_blood_pressure = #{diastolicBloodPressure},</if>
+      <if test="height != null">height = #{height},</if>
+      <if test="weight != null">weight = #{weight},</if>
+      <if test="bloodSugar != null">blood_sugar = #{bloodSugar},</if>
+      <if test="bloodLipid != null">blood_lipid = #{bloodLipid},</if>
+    </trim>
+    where physique_id = #{physiqueId}
+  </update>
+
+  <delete id="deleteOsPhysiqueByPhysiqueId" parameterType="Long">
+    delete
+    from os_physique
+    where physique_id = #{physiqueId}
+  </delete>
+
+  <delete id="deleteOsPhysiqueByPhysiqueIds" parameterType="String">
+    delete from os_physique where physique_id in
+    <foreach item="physiqueId" collection="array" open="(" separator="," close=")">
+      #{physiqueId}
+    </foreach>
+  </delete>
+</mapper>

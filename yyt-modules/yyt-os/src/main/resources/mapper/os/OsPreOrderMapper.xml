@@ -8,8 +8,8 @@
     <result property="preCode" column="pre_code"/>
     <result property="patientId" column="patient_id"/>
     <result property="registerId" column="register_id"/>
+    <result property="type" column="type"/>
     <result property="money" column="money"/>
-    <result property="addCost" column="add_cost"/>
     <result property="payMethod" column="pay_method"/>
     <result property="payTime" column="pay_time"/>
     <result property="createTime" column="create_time"/>
@@ -17,6 +17,10 @@
   </resultMap>
 
   <resultMap id="OsPreOrderOsPrescriptionResult" type="OsPreOrder" extends="OsPreOrderResult">
+    <association property="caseHistory" column="pre_code"
+                 select="com.yyt.os.mapper.OsCaseHistoryMapper.selectOsCaseHistoryByPreCode"/>
+    <association property="physique" column="pre_code"
+                 select="com.yyt.os.mapper.OsPhysiqueMapper.selectOsPhysiqueByPreCode"/>
     <collection property="osPrescriptionList" notNullColumn="sub_pre_id" javaType="java.util.List"
                 resultMap="OsPrescriptionResult"/>
   </resultMap>
@@ -42,8 +46,8 @@
     select pre_code,
            patient_id,
            register_id,
+           type,
            money,
-           add_cost,
            pay_method,
            pay_time,
            create_time,
@@ -51,24 +55,41 @@
     from os_pre_order
   </sql>
 
-  <select id="selectOsPreOrderList" parameterType="OsPreOrder" resultMap="OsPreOrderResult">
-    <include refid="selectOsPreOrderVo"/>
-    <where>
-      <if test="patientId != null ">and patient_id = #{patientId}</if>
-      <if test="registerId != null  and registerId != ''">and register_id = #{registerId}</if>
-      <if test="money != null ">and money = #{money}</if>
-      <if test="addCost != null  and addCost != ''">and add_cost = #{addCost}</if>
-      <if test="payMethod != null  and payMethod != ''">and pay_method = #{payMethod}</if>
-      <if test="payTime != null ">and pay_time = #{payTime}</if>
-    </where>
+  <select id="selectOsPreOrderList" parameterType="OsPreOrder" resultMap="OsPreOrderOsPrescriptionResult">
+    select a.pre_code,
+           a.patient_id,
+           a.register_id,
+           a.type,
+           a.money,
+           a.pay_method,
+           a.pay_time,
+           a.create_time,
+           a.update_time,
+           b.pre_id     as sub_pre_id,
+           b.pre_code   as sub_pre_code,
+           b.check_id   as sub_check_id,
+           b.part       as sub_part,
+           b.drug_id    as sub_drug_id,
+           b.name       as sub_name,
+           b.unit_price as sub_unit_price,
+           b.unit       as sub_unit,
+           b.total      as sub_total,
+           b.total_unit as sub_total_unit,
+           b.type       as sub_type,
+           b.dosage     as sub_dosage,
+           b.usage      as sub_usage,
+           b.frequency  as sub_frequency
+    from os_pre_order a
+           left join os_prescription b on b.pre_code = a.pre_code
+    where a.patient_id = #{patientId}
   </select>
 
   <select id="selectOsPreOrderByPreCode" parameterType="String" resultMap="OsPreOrderOsPrescriptionResult">
     select a.pre_code,
            a.patient_id,
            a.register_id,
+           a.type,
            a.money,
-           a.add_cost,
            a.pay_method,
            a.pay_time,
            a.create_time,
@@ -92,14 +113,43 @@
     where a.pre_code = #{preCode}
   </select>
 
+  <select id="selectOsPreOrderByRegId" parameterType="String" resultMap="OsPreOrderOsPrescriptionResult">
+    select a.pre_code,
+           a.patient_id,
+           a.register_id,
+           a.type,
+           a.money,
+           a.pay_method,
+           a.pay_time,
+           a.create_time,
+           a.update_time,
+           b.pre_id     as sub_pre_id,
+           b.pre_code   as sub_pre_code,
+           b.check_id   as sub_check_id,
+           b.part       as sub_part,
+           b.drug_id    as sub_drug_id,
+           b.name       as sub_name,
+           b.unit_price as sub_unit_price,
+           b.unit       as sub_unit,
+           b.total      as sub_total,
+           b.total_unit as sub_total_unit,
+           b.type       as sub_type,
+           b.dosage     as sub_dosage,
+           b.usage      as sub_usage,
+           b.frequency  as sub_frequency
+    from os_pre_order a
+           left join os_prescription b on b.pre_code = a.pre_code
+    where a.register_id = #{regId}
+  </select>
+
   <insert id="insertOsPreOrder" parameterType="OsPreOrder">
     insert into os_pre_order
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="preCode != null">pre_code,</if>
       <if test="patientId != null">patient_id,</if>
       <if test="registerId != null and registerId != ''">register_id,</if>
+      <if test="type != null and type != ''">type,</if>
       <if test="money != null">money,</if>
-      <if test="addCost != null">add_cost,</if>
       <if test="payMethod != null and payMethod != ''">pay_method,</if>
       <if test="payTime != null">pay_time,</if>
       <if test="createTime != null">create_time,</if>
@@ -109,8 +159,8 @@
       <if test="preCode != null">#{preCode},</if>
       <if test="patientId != null">#{patientId},</if>
       <if test="registerId != null and registerId != ''">#{registerId},</if>
+      <if test="type != null and type != ''">#{type},</if>
       <if test="money != null">#{money},</if>
-      <if test="addCost != null">#{addCost},</if>
       <if test="payMethod != null and payMethod != ''">#{payMethod},</if>
       <if test="payTime != null">#{payTime},</if>
       <if test="createTime != null">#{createTime},</if>
@@ -123,8 +173,8 @@
     <trim prefix="SET" suffixOverrides=",">
       <if test="patientId != null">patient_id = #{patientId},</if>
       <if test="registerId != null and registerId != ''">register_id = #{registerId},</if>
+      <if test="type != null and type != ''">type = #{type},</if>
       <if test="money != null">money = #{money},</if>
-      <if test="addCost != null">add_cost = #{addCost},</if>
       <if test="payMethod != null and payMethod != ''">pay_method = #{payMethod},</if>
       <if test="payTime != null">pay_time = #{payTime},</if>
       <if test="createTime != null">create_time = #{createTime},</if>
@@ -161,7 +211,7 @@
 
   <insert id="batchOsPrescription">
     insert into os_prescription( pre_id, pre_code, check_id, part, drug_id, name, unit_price, unit, total, total_unit,
-    type, dosage, usage, frequency) values
+    type, dosage, `usage`, frequency) values
     <foreach item="item" index="index" collection="list" separator=",">
       ( #{item.preId}, #{item.preCode}, #{item.checkId}, #{item.part}, #{item.drugId}, #{item.name}, #{item.unitPrice},
       #{item.unit}, #{item.total}, #{item.totalUnit}, #{item.type}, #{item.dosage}, #{item.usage}, #{item.frequency})

@@ -1,10 +1,11 @@
-import { login, logout, getInfo, refreshToken } from '@/api/login'
-import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
+import {login, logout, getInfo, refreshToken} from '@/api/login'
+import {getToken, setToken, setExpiresIn, removeToken} from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
     id: '',
+    doctorId: null,
     name: '',
     avatar: '',
     roles: [],
@@ -20,6 +21,9 @@ const user = {
     },
     SET_ID: (state, id) => {
       state.id = id
+    },
+    SET_DOCTOR_ID: (state, id) => {
+      state.doctorId = id
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -37,7 +41,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login({commit}, userInfo) {
       const username = userInfo.username.trim()
       const password = userInfo.password
       const code = userInfo.code
@@ -57,7 +61,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+    GetInfo({commit, state}) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
@@ -69,6 +73,7 @@ const user = {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
           commit('SET_ID', user.userId)
+          commit('SET_DOCTOR_ID', user.doctorId)
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', avatar)
           resolve(res)
@@ -90,9 +95,9 @@ const user = {
         })
       })
     },
-    
+
     // 退出系统
-    LogOut({ commit, state }) {
+    LogOut({commit, state}) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
@@ -107,7 +112,7 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut({ commit }) {
+    FedLogOut({commit}) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()

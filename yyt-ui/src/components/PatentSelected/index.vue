@@ -7,13 +7,15 @@
     <div class="info">
       <span style="font-weight: 700;color:#000;">{{ item.name }}</span>
       <span>{{ dictFormat(item.sex) }}</span>
-      <span>{{ item.age }}岁</span>
+      <span>{{ calculateAge(item.card) }}岁</span>
       <span>{{ item.phone }}</span>
     </div>
   </div>
 </template>
 
 <script>
+import {calculateAge} from "@/utils/web-utils";
+
 export default {
   name: "PatentSelected",
   dicts: ['sys_user_sex'],
@@ -26,6 +28,7 @@ export default {
     },
   },
   methods: {
+    calculateAge,
     dictFormat(row, column) {
       return this.selectDictLabel(this.dict.type.sys_user_sex, row);
     },

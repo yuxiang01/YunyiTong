@@ -10,11 +10,13 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.yyt.common.core.annotation.Excel;
 import com.yyt.common.core.web.domain.BaseEntity;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 处方订单对象 os_pre_order
  *
  * @author yyt
- * @date 2023-12-18
+ * @date 2023-12-21
  */
 public class OsPreOrder extends BaseEntity {
   private static final long serialVersionUID = 1L;
@@ -28,19 +30,30 @@ public class OsPreOrder extends BaseEntity {
    * 患者编号
    */
   @Excel(name = "患者编号")
+  @NotNull(message = "参数传递不全")
   private Long patientId;
 
   /**
    * 挂号订单编号
    */
   @Excel(name = "挂号订单编号")
+  @NotNull(message = "参数传递不全")
   private String registerId;
+
+  /**
+   * 接诊类型
+   */
+  @Excel(name = "接诊类型")
+  @NotNull(message = "参数传递不全")
+  private String type;
 
   /**
    * 总金额
    */
   @Excel(name = "总金额")
+  @JsonFormat(shape = JsonFormat.Shape.STRING)
   private BigDecimal money;
+
 
   /**
    * 支付方式
@@ -51,19 +64,18 @@ public class OsPreOrder extends BaseEntity {
   /**
    * 支付时间
    */
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @Excel(name = "支付时间", width = 30, dateFormat = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @Excel(name = "支付时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
   private Date payTime;
-
-  /**
-   * 附加费用
-   */
-  private String addCost;
 
   /**
    * 处方信息
    */
   private List<OsPrescription> osPrescriptionList;
+
+  private OsCaseHistory caseHistory;
+  private OsPhysique physique;
+  private OsRegorder regorder;
 
   public void setPreCode(String preCode) {
     this.preCode = preCode;
@@ -87,6 +99,14 @@ public class OsPreOrder extends BaseEntity {
 
   public String getRegisterId() {
     return registerId;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String getType() {
+    return type;
   }
 
   public void setMoney(BigDecimal money) {
@@ -121,12 +141,28 @@ public class OsPreOrder extends BaseEntity {
     this.osPrescriptionList = osPrescriptionList;
   }
 
-  public void setAddCost(String addCost) {
-    this.addCost = addCost;
+  public OsCaseHistory getCaseHistory() {
+    return caseHistory;
   }
 
-  public String getAddCost() {
-    return addCost;
+  public void setCaseHistory(OsCaseHistory caseHistory) {
+    this.caseHistory = caseHistory;
+  }
+
+  public OsPhysique getPhysique() {
+    return physique;
+  }
+
+  public void setPhysique(OsPhysique physique) {
+    this.physique = physique;
+  }
+
+  public OsRegorder getRegorder() {
+    return regorder;
+  }
+
+  public void setRegorder(OsRegorder regorder) {
+    this.regorder = regorder;
   }
 
   @Override
@@ -135,8 +171,8 @@ public class OsPreOrder extends BaseEntity {
         .append("preCode", getPreCode())
         .append("patientId", getPatientId())
         .append("registerId", getRegisterId())
+        .append("type", getType())
         .append("money", getMoney())
-        .append("addCost", getAddCost())
         .append("payMethod", getPayMethod())
         .append("payTime", getPayTime())
         .append("createTime", getCreateTime())
