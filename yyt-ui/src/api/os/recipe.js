@@ -9,6 +9,14 @@ export function listOrder(query) {
   })
 }
 
+export function caseListOrder(query) {
+  return request({
+    url: '/os/order/case/list',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询处方订单详细
 export function getOrder(preCode) {
   return request({

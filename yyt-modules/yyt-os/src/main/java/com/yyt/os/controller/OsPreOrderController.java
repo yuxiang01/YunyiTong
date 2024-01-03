@@ -42,8 +42,13 @@ public class OsPreOrderController extends BaseController {
   @GetMapping("/list")
   public TableDataInfo list(OsPreOrder osPreOrder) {
     startPage();
-    List<OsPreOrder> list = osPreOrderService.selectOsPreOrderList(osPreOrder);
-    return getDataTable(list);
+    return getDataTable(osPreOrderService.selectOsPreOrderList(osPreOrder));
+  }
+
+  @RequiresPermissions("os:order:list")
+  @GetMapping("/case/list")
+  public TableDataInfo caseList(OsPreOrder osPreOrder) {
+    return getDataTable(osPreOrderService.selectOsPreOrderList(osPreOrder));
   }
 
   /**

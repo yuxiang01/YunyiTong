@@ -81,7 +81,6 @@
 <script>
 import {listRegorder} from "@/api/os/regorder";
 import {calculateTime, getEncode} from "@/utils/web-utils";
-import {getInfo} from "@/api/login";
 
 export default {
   props: [],

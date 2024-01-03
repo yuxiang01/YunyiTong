@@ -82,6 +82,7 @@
     from os_pre_order a
            left join os_prescription b on b.pre_code = a.pre_code
     where a.patient_id = #{patientId}
+    ORDER BY a.create_time DESC
   </select>
 
   <select id="selectOsPreOrderByPreCode" parameterType="String" resultMap="OsPreOrderOsPrescriptionResult">

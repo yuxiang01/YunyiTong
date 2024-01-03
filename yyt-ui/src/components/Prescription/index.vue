@@ -182,15 +182,14 @@ export default {
       let key = `preform_${this.currentPre}`
       this.ids.forEach(i => {
         let obj = this.assignmentRecipe(i)
-        console.log(obj);
         obj.index = this[key][this[key].length - 1]?.index + 1 || 1
-        this[key].forEach(item => {
-          if (item.name === obj.name) {
-            item.dosage++
-          } else {
-            this[key].push(obj)
-          }
-        })
+        let findIndex = this[key].findIndex((item) => item.name === obj.name);
+        if (findIndex !== -1) {
+          let item = this[key][findIndex];
+          item.drugId ? item.total++ : item.dosage++
+        } else {
+          this[key].push(obj)
+        }
       })
       this.tableData = this[key]
     },
@@ -227,7 +226,7 @@ export default {
       }
       for (const key in obj) {
         if (key === 'unitPrice') {
-          obj[key] = item['drugPrice'] | item['retailPrice'] | item['price']
+          obj[key] = item['drugPrice'] || item['retailPrice'] || item['price']
         } else if (key === 'dosage') {
           obj[key] = item[key] || 1
         } else {
@@ -240,11 +239,11 @@ export default {
     getCurrentPreTotal(key = `preform_${this.currentPre}`) {
       if (key === 'preform_0' || key === 'preform_1') {
         return this[key].reduce((acc, item) => {
-          return acc + (parseInt((item.total || '0')) * parseInt((item.unitPrice || '0')))
+          return acc + (parseFloat((item.total || '0')) * parseFloat((item.unitPrice || '0')))
         }, 0)
       } else {
         return this[key].reduce((acc, item) => {
-          return acc + (parseInt((item.dosage || '0')) * parseInt((item.unitPrice || '0')))
+          return acc + (parseFloat((item.dosage || '0')) * parseFloat((item.unitPrice || '0')))
         }, 0)
       }
     },
@@ -267,6 +266,10 @@ export default {
     },
     saveEvent() {
       let data = this.mergeFn()
+      if (data.length < 1) {
+        this.$modal.msgWarning("请至少添加一项处方");
+        return
+      }
       this.$emit('savePre', data)
     },
     finish() {
@@ -377,7 +380,7 @@ export default {
                   type="text"
                   icon="el-icon-delete"
                   @click="handleDeletePrescription(scope)"
-                  v-hasPermi="['recipe:recipe:remove']"
+                  v-hasPermi="['os:order:remove']"
                 />
               </template>
             </el-table-column>
@@ -422,7 +425,7 @@ export default {
                   type="text"
                   icon="el-icon-delete"
                   @click="handleDeletePrescription(scope)"
-                  v-hasPermi="['recipe:recipe:remove']"
+                  v-hasPermi="['os:order:remove']"
                 />
               </template>
             </el-table-column>
@@ -454,7 +457,7 @@ export default {
                   type="text"
                   icon="el-icon-delete"
                   @click="handleDeletePrescription(scope)"
-                  v-hasPermi="['recipe:recipe:remove']"
+                  v-hasPermi="['os:order:remove']"
                 />
               </template>
             </el-table-column>

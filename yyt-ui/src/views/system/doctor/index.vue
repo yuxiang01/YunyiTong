@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="手机号" prop="phone">
-        <el-input
-          v-model="queryParams.phone"
-          placeholder="请输入手机号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="性别" prop="sex">
         <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable>
           <el-option
@@ -34,26 +26,6 @@
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="职位" prop="position">
-        <el-select v-model="queryParams.position" placeholder="请选择职位" clearable>
-          <el-option
-            v-for="dict in postList"
-            :key="dict.postId"
-            :label="dict.postName"
-            :value="dict.postId"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="科室" prop="deptId">
-        <el-select v-model="queryParams.deptId" placeholder="请选择所属科室" clearable>
-          <el-option
-            v-for="dict in deptList"
-            :key="dict.deptId"
-            :label="dict.deptName"
-            :value="dict.deptId"
           />
         </el-select>
       </el-form-item>
@@ -132,7 +104,6 @@
         </template>
       </el-table-column>
       <el-table-column label="挂号人数" align="center" prop="regNumber"/>
-      <el-table-column label="每小时挂号人数" align="center" width="125" prop="regPerHour"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -164,68 +135,104 @@
     />
 
     <!-- 添加或修改医生对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="550px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入姓名"/>
-        </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号"/>
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-select v-model="form.sex" placeholder="请选择性别">
-            <el-option
-              v-for="dict in dict.type.sys_user_sex"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="年龄" prop="age">
-          <el-input v-model="form.age" placeholder="请输入年龄"/>
-        </el-form-item>
-        <el-form-item label="挂号费用" prop="cost">
-          <el-input v-model="form.cost" placeholder="请输入挂号费用"/>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
-              :key="dict.value"
-              :label="dict.value"
-            >{{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="挂号人数" prop="regNumber">
-          <el-input v-model="form.regNumber" placeholder="请输入挂号人数"/>
-        </el-form-item>
-        <el-form-item label="每小时挂号人数" prop="regPerHour">
-          <el-input v-model="form.regPerHour" placeholder="请输入每小时挂号人数"/>
-        </el-form-item>
-        <el-form-item label="职位" prop="position">
-          <el-select v-model="form.position" placeholder="请选择职位" clearable>
-            <el-option
-              v-for="dict in postList"
-              :key="dict.postId"
-              :label="dict.postName"
-              :value="dict.postId"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="科室" prop="deptId">
-          <treeselect v-model="form.deptId" :disable-branch-nodes="true" :options="deptList" :show-count="true"
-                      placeholder="请选择归属部门"/>
-        </el-form-item>
-        <el-form-item label="医生简介" prop="intro">
-          <el-input v-model="form.intro" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="660px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="form.name" placeholder="请输入姓名"/>
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="form.phone" placeholder="请输入手机号"/>
+          </el-form-item>
+        </el-row>
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="性别" prop="sex">
+            <el-radio-group v-model="form.sex">
+              <el-radio
+                v-for="dict in dict.type.sys_user_sex"
+                :key="dict.value"
+                :label="dict.value"
+              >{{ dict.label }}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="年龄" prop="age">
+            <el-input v-model="form.age" placeholder="请输入年龄"/>
+          </el-form-item>
+        </el-row>
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="挂号费用" prop="cost">
+            <el-input v-model="form.cost" placeholder="请输入挂号费用"/>
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-radio-group v-model="form.status">
+              <el-radio
+                v-for="dict in dict.type.sys_normal_disable"
+                :key="dict.value"
+                :label="dict.value"
+              >{{ dict.label }}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-row>
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="挂号人数" prop="regNumber">
+            <el-input v-model="form.regNumber" placeholder="请输入挂号人数"/>
+          </el-form-item>
+          <el-form-item label="职位" prop="position">
+            <el-select v-model="form.position" placeholder="请选择职位" clearable>
+              <el-option
+                v-for="dict in postList"
+                :key="dict.postId"
+                :label="dict.postName"
+                :value="dict.postId"
+              />
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <el-row type="flex" justify="left" align="top" :gutter="15">
+          <el-form-item label="科室" prop="deptId">
+            <treeselect style="width: 200px;"
+                        v-model="form.deptId" :disable-branch-nodes="true"
+                        :options="deptList" :show-count="true"
+                        placeholder="请选择归属部门"/>
+          </el-form-item>
+          <el-form-item label="医生简介" prop="intro">
+            <el-input v-model="form.intro" type="textarea" placeholder="请输入内容"/>
+          </el-form-item>
+        </el-row>
         <el-form-item label="擅长领域" prop="areasOfExpertise">
           <el-input v-model="form.areasOfExpertise" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="值班信息" prop="dutyInfo">
-          <el-input v-model="form.dutyInfo" placeholder="请输入值班信息"/>
+          <el-table ref="dutyTable" :data="form.dutyInfo">
+            <el-table-column label="星期" align="center">
+              <template #default="scope">{{ getWeek(scope.$index) }}</template>
+            </el-table-column>
+            <el-table-column label="上午" align="center">
+              <template #default="scope">
+                <el-checkbox v-model="scope.row[0]"/>
+              </template>
+            </el-table-column>
+            <el-table-column label="下午" align="center">
+              <template #default="scope">
+                <el-checkbox v-model="scope.row[1]"/>
+              </template>
+            </el-table-column>
+            <el-table-column label="晚班" align="center">
+              <template #default="scope">
+                <el-checkbox v-model="scope.row[2]"/>
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template #header>
+                <el-checkbox v-model="allCheck" @change="allChecked">全选</el-checkbox>
+              </template>
+              <template #default="scope">
+                <el-button plain size="mini" @click="itemChecked(scope)" type="primary">选中</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -327,11 +334,27 @@ export default {
         ]
       },
       deptList: [],
-      postList: []
+      postList: [],
+      allCheck: false
     };
   },
   created() {
     this.getList();
+  },
+  watch: {
+    'form.dutyInfo': {
+      handler() {
+        let flag = true
+        this.form.dutyInfo.forEach(item => {
+          if (item.filter(i => i === false).length > 0) {
+            flag = false
+            return false
+          }
+        })
+        this.allCheck = flag
+      },
+      deep: true
+    }
   },
   methods: {
     /** 查询医生列表 */
@@ -357,16 +380,24 @@ export default {
         deptId: null,
         name: null,
         phone: null,
-        sex: null,
-        position: null,
+        sex: '2',
+        position: 5,
         age: null,
         cost: null,
-        status: null,
-        regNumber: null,
+        status: '0',
+        regNumber: 100,
         regPerHour: null,
         intro: null,
         areasOfExpertise: null,
-        dutyInfo: null,
+        dutyInfo: [
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false],
+          [false, false, false]
+        ],
         createTime: null,
         updateTime: null
       };
@@ -400,6 +431,7 @@ export default {
       const doctorId = row.doctorId || this.ids
       getDoctor(doctorId).then(response => {
         this.form = response.data;
+        this.form.dutyInfo = JSON.parse(this.form.dutyInfo)
         this.open = true;
         this.title = "修改医生";
       });
@@ -408,6 +440,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.dutyInfo = JSON.stringify(this.form.dutyInfo)
           if (this.form.doctorId != null) {
             updateDoctor(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -440,7 +473,31 @@ export default {
       this.download('system/doctor/export', {
         ...this.queryParams
       }, `doctor_${new Date().getTime()}.xlsx`)
+    },
+    getWeek(index) {
+      let week = ['一', '二', '三', '四', '五', '六', '日']
+      return week[index]
+    },
+    /** 全部选中 */
+    allChecked(value) {
+      for (let i = 0; i < 7; i++) {
+        this.$set(this.form.dutyInfo, i, [value, value, value])
+      }
+    },
+    itemChecked(scope) {
+      let value = !(scope.row.filter(i => i === true).length === 3)
+      this.$set(this.form.dutyInfo, scope.$index, [value, value, value])
     }
-  }
+  },
 };
 </script>
+
+<style scoped>
+/deep/ .el-row--flex {
+  justify-content: space-between;
+}
+
+/deep/ .el-form .el-input {
+  width: 200px;
+}
+</style>

@@ -108,12 +108,4 @@ public class OsRegorderServiceImpl implements IOsRegorderService {
   public Integer findDoctorRegCountByDoctorId(String doctorId) {
     return osRegorderMapper.findDoctorRegCountByDoctorId(doctorId);
   }
-
-  // TODO: 接诊逻辑待完成
-  @Override
-  public int receiveOsRegorder(OsRegorder osRegorder) {
-    // patientService.selectSysPatientByPatientId(osRegorder.getPatientId())
-    String result1= HttpUtil.get("https://www.baidu.com");
-    return 0;
-  }
 }

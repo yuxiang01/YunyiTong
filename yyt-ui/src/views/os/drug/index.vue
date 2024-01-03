@@ -95,7 +95,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" height="500" :data="drugList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="440" :data="drugList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="药品编号" align="center" prop="drugId"/>
       <el-table-column label="药品名称" align="center" prop="name"/>
@@ -114,7 +114,10 @@
       <el-table-column label="拼音码" align="center" prop="pinyinCode"/>
       <el-table-column label="药品分类" align="center" prop="drugType">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_drug_classification" :value="scope.row.drugType"/>
+          <dict-tag v-if="scope.row.preType === 0" :options="dict.type.sys_drug_classification"
+                    :value="scope.row.drugType"/>
+          <dict-tag v-if="scope.row.preType === 1" :options="dict.type.sys_china_drug"
+                    :value="scope.row.drugType"/>
         </template>
       </el-table-column>
       <el-table-column label="药品剂型" align="center" prop="drugDosageForm">
@@ -209,7 +212,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="药品分类" prop="drugType">
-            <el-select v-if="preType === 0" v-model="form.drugType" placeholder="请选择药品分类" clearable>
+            <el-select v-if="form.preType === 0" v-model="form.drugType" placeholder="请选择药品分类" clearable>
               <el-option
                 v-for="dict in dict.type.sys_drug_classification"
                 :key="dict.value"
@@ -217,7 +220,7 @@
                 :value="dict.value"
               />
             </el-select>
-            <el-select v-if="preType === 1" v-model="form.drugType" placeholder="请选择药品分类" clearable>
+            <el-select v-if="form.preType === 1" v-model="form.drugType" placeholder="请选择药品分类" clearable>
               <el-option
                 v-for="dict in dict.type.sys_china_drug"
                 :key="dict.value"
@@ -392,9 +395,6 @@ export default {
         total: [
           {required: true, message: "总量不能为空", trigger: "blur"}
         ],
-        frequency: [
-          {required: true, message: "频率不能为空", trigger: "blur"}
-        ],
         createTime: [
           {required: true, message: "创建时间不能为空", trigger: "blur"}
         ],
@@ -433,10 +433,10 @@ export default {
         drugId: null,
         name: null,
         specification: null,
-        preType: null,
+        preType: 0,
         purchasePrice: null,
         drugPrice: null,
-        status: null,
+        status: '0',
         pinyinCode: null,
         drugType: null,
         drugDosageForm: null,

@@ -144,8 +144,10 @@ export default {
         </p>
       </div>
       <div class="right">
-        <el-button v-if="obj.payMethod === '' || obj.payMethod === null" @click="chargeEvent" type="warning"
-                   icon="el-icon-coin">收费
+        <el-button
+          v-if="obj.payMethod === '' || obj.payMethod === null"
+          @click="chargeEvent" type="warning"
+          icon="el-icon-coin">收费
         </el-button>
         <el-button @click="backEvent" type="primary" plain icon="el-icon-back">返回</el-button>
       </div>

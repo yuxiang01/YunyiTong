@@ -6,7 +6,7 @@ export default {
   props: {tableData: Array},
   dicts: [
     'sys_reception_type', 'sys_usage_usage', 'sys_unit_unit',
-    'sys_frequentness_frequentness','sys_visit_status'
+    'sys_frequentness_frequentness', 'sys_visit_status'
   ],
   data() {
     return {
@@ -23,7 +23,7 @@ export default {
     },
     tableData: {
       handler() {
-        if (this.currentPreCode === '') {
+        if (this.currentPreCode === '' && this.tableData.length > 0) {
           this.currentPreCode = this.tableData[0].preCode
         }
       },
@@ -32,10 +32,12 @@ export default {
     },
     currentPreCode: {
       handler(newVal) {
-        let obj = this.tableData.filter(i => i.preCode === newVal)[0]
-        this.pre = {...obj}
-        this.preForm_0 = obj.osPrescriptionList.filter(i => i.type === 0)
-        this.preForm_1 = obj.osPrescriptionList.filter(i => i.type === 1)
+        if (this.tableData.length > 0) {
+          let obj = this.tableData.filter(i => i.preCode === newVal)[0]
+          this.pre = {...obj}
+          this.preForm_0 = obj.osPrescriptionList.filter(i => i.type === 0)
+          this.preForm_1 = obj.osPrescriptionList.filter(i => i.type === 1)
+        }
       },
       immediate: true
     }
@@ -64,104 +66,109 @@ export default {
         </el-radio-group>
       </div>
       <div class="center flex-ver-center">
-        <div class="left">
-          <div class="flex_sides" style="align-items: center;height: 36px;">
-            <div class="header_left">
+        <template v-if="tableData && tableData.length > 0">
+          <div class="left">
+            <div class="flex_sides" style="align-items: center;height: 36px;">
+              <div class="header_left">
               <span :class="'tag tag-'+pre.type">
               {{ commonDictFormat('sys_reception_type', pre.type) }}
             </span>
+              </div>
+              <el-button v-if="pre.regorder.status < 3" @click="editEvent" plain type="primary" icon="el-icon-edit">
+                编辑病历
+              </el-button>
             </div>
-            <el-button v-if="pre.regorder.status < 3" @click="editEvent" plain type="primary" icon="el-icon-edit">编辑病历</el-button>
-          </div>
-          <h3>体格信息</h3>
-          <table>
-            <tr>
-              <td>体温：{{ pre.physique.temp }} ℃</td>
-              <td>呼吸：{{ pre.physique.rate }} 次/分</td>
-              <td>脉搏: {{ pre.physique.pulse }} 次/分</td>
-              <td>
-                血压: {{ pre.physique.systolicBloodPressure }}
-                ~{{ pre.physique.diastolicBloodPressure }}mmgh
-              </td>
-            </tr>
-            <tr>
-              <td>身高: {{ pre.physique.height }} cm</td>
-              <td>体重: {{ pre.physique.weight }} kg</td>
-              <td>血糖: {{ pre.physique.bloodSugar }} mmol/l</td>
-              <td>血脂: {{ pre.physique.bloodLipid }} mmol/l</td>
-            </tr>
-          </table>
-          <h3>病历信息</h3>
-          <table>
-            <tr>
-              <td colspan="2">
-                <span class="blod_span">症状出现日期: </span> {{ pre.caseHistory.dateOfOnset }}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <span class="blod_span">主诉: </span> {{ pre.caseHistory.activeInChief }}
-              </td>
-            </tr>
-            <tr>
-              <td>现病史：{{ pre.caseHistory.hpi }}</td>
-              <td>既往史：{{ pre.caseHistory.pastHistory }}</td>
-            </tr>
-            <tr>
-              <td>过敏史：{{ pre.caseHistory.allergy }}</td>
-              <td>家庭史：{{ pre.caseHistory.familyHistory }}</td>
-            </tr>
-            <tr>
-              <td colspan="2">初步诊断：{{ pre.caseHistory.diagnosis }}</td>
-            </tr>
-            <tr>
-              <td colspan="2">医嘱：{{ pre.caseHistory.idea }}</td>
-            </tr>
-          </table>
-          <div class="preInfo" v-if="preForm_0.length > 0 || preForm_1.length > 0">
-            <h3>处方信息</h3>
-            <div class="preForm_0" v-if="preForm_0.length > 0">
-              <p class="blod_span">西药处方</p>
-              <p v-for="(item,index) in preForm_0">
-                <b>{{ index + 1 }} {{ item.name }}</b>
-                用法：{{ commonDictFormat('sys_usage_usage', item.usage) }}
-                {{ commonDictFormat('sys_frequentness_frequentness', item.frequency) }}
-                1次{{ item.dosage }}{{ commonDictFormat('sys_unit_unit', item.unit) }}
-                共 {{ item.total }}{{ commonDictFormat('sys_unit_unit', item.totalUnit) }}
-              </p>
-            </div>
-            <div class="preForm_1" v-if="preForm_1.length > 0">
-              <p class="blod_span">中药处方</p>
-              <p v-for="(item,index) in preForm_1">
-                <b>{{ index + 1 }} {{ item.name }}</b>
-                用法：{{ commonDictFormat('sys_usage_usage', item.usage) }}
-                {{ commonDictFormat('sys_frequentness_frequentness', item.frequency) }}
-                1次{{ item.dosage }}{{ commonDictFormat('sys_unit_unit', item.unit) }}
-                共 {{ item.total }}{{ commonDictFormat('sys_unit_unit', item.totalUnit) }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="right">
-          <el-timeline>
-            <el-timeline-item
-              v-for="item in tableData" :key="item.preCode" placement="top"
-              :class="currentPreCode === item.preCode ? 'action' : ''"
-              :timestamp="item.createTime">
-              <div class="cart" @click="clickEvent(item.preCode)">
-                <p class="flex_sides">
-                  <span>门诊编号: {{ item.preCode }}</span>
-                  <dict-tag :options="dict.type.sys_visit_status" :value="item.regorder.status"/>
-                </p>
-                <p>诊断：<span class="blod_span">{{ item.caseHistory.diagnosis }}</span></p>
-                <p class="flex_sides">
-                  <span>接诊科室：{{ item.regorder.deptName }}</span>
-                  <span> 接诊医生：{{ item.regorder.doctor }}</span>
+            <h3>体格信息</h3>
+            <table>
+              <tr>
+                <td>体温：{{ pre.physique.temp }} ℃</td>
+                <td>呼吸：{{ pre.physique.rate }} 次/分</td>
+                <td>脉搏: {{ pre.physique.pulse }} 次/分</td>
+                <td>
+                  血压: {{ pre.physique.systolicBloodPressure }}
+                  ~{{ pre.physique.diastolicBloodPressure }}mmgh
+                </td>
+              </tr>
+              <tr>
+                <td>身高: {{ pre.physique.height }} cm</td>
+                <td>体重: {{ pre.physique.weight }} kg</td>
+                <td>血糖: {{ pre.physique.bloodSugar }} mmol/l</td>
+                <td>血脂: {{ pre.physique.bloodLipid }} mmol/l</td>
+              </tr>
+            </table>
+            <h3>病历信息</h3>
+            <table>
+              <tr>
+                <td colspan="2">
+                  <span class="blod_span">症状出现日期: </span> {{ pre.caseHistory.dateOfOnset }}
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span class="blod_span">主诉: </span> {{ pre.caseHistory.activeInChief }}
+                </td>
+              </tr>
+              <tr>
+                <td>现病史：{{ pre.caseHistory.hpi }}</td>
+                <td>既往史：{{ pre.caseHistory.pastHistory }}</td>
+              </tr>
+              <tr>
+                <td>过敏史：{{ pre.caseHistory.allergy }}</td>
+                <td>家庭史：{{ pre.caseHistory.familyHistory }}</td>
+              </tr>
+              <tr>
+                <td colspan="2">初步诊断：{{ pre.caseHistory.diagnosis }}</td>
+              </tr>
+              <tr>
+                <td colspan="2">医嘱：{{ pre.caseHistory.idea }}</td>
+              </tr>
+            </table>
+            <div class="preInfo" v-if="preForm_0.length > 0 || preForm_1.length > 0">
+              <h3>处方信息</h3>
+              <div class="preForm_0" v-if="preForm_0.length > 0">
+                <p class="blod_span">西药处方</p>
+                <p v-for="(item,index) in preForm_0">
+                  <b>{{ index + 1 }} {{ item.name }}</b>
+                  用法：{{ commonDictFormat('sys_usage_usage', item.usage) }}
+                  {{ commonDictFormat('sys_frequentness_frequentness', item.frequency) }}
+                  1次{{ item.dosage }}{{ commonDictFormat('sys_unit_unit', item.unit) }}
+                  共 {{ item.total }}{{ commonDictFormat('sys_unit_unit', item.totalUnit) }}
                 </p>
               </div>
-            </el-timeline-item>
-          </el-timeline>
-        </div>
+              <div class="preForm_1" v-if="preForm_1.length > 0">
+                <p class="blod_span">中药处方</p>
+                <p v-for="(item,index) in preForm_1">
+                  <b>{{ index + 1 }} {{ item.name }}</b>
+                  用法：{{ commonDictFormat('sys_usage_usage', item.usage) }}
+                  {{ commonDictFormat('sys_frequentness_frequentness', item.frequency) }}
+                  1次{{ item.dosage }}{{ commonDictFormat('sys_unit_unit', item.unit) }}
+                  共 {{ item.total }}{{ commonDictFormat('sys_unit_unit', item.totalUnit) }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <el-timeline>
+              <el-timeline-item
+                v-for="item in tableData" :key="item.preCode" placement="top"
+                :class="currentPreCode === item.preCode ? 'action' : ''"
+                :timestamp="item.createTime">
+                <div class="cart" @click="clickEvent(item.preCode)">
+                  <p class="flex_sides">
+                    <span>门诊编号: {{ item.preCode }}</span>
+                    <dict-tag :options="dict.type.sys_visit_status" :value="item.regorder.status"/>
+                  </p>
+                  <p>诊断：<span class="blod_span">{{ item.caseHistory.diagnosis }}</span></p>
+                  <p class="flex_sides">
+                    <span>接诊科室：{{ item.regorder.deptName }}</span>
+                    <span> 接诊医生：{{ item.regorder.doctor }}</span>
+                  </p>
+                </div>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </template>
+        <div v-else class="empty">暂无数据</div>
       </div>
     </div>
   </div>
@@ -225,7 +232,7 @@ export default {
   display: none;
 }
 
-.center .left {
+.center .left,.empty {
   flex: 60%;
   margin: 10px;
   padding: 10px 20px;

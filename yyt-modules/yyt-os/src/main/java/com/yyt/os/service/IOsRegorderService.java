@@ -57,7 +57,7 @@ public interface IOsRegorderService {
    * @param regId 挂号订单主键
    * @return 结果
    */
-  public int deleteOsRegorderByRegId(String regId);
+  int deleteOsRegorderByRegId(String regId);
 
   /**
    * 根据医生ID查询该医生预约数
@@ -65,7 +65,5 @@ public interface IOsRegorderService {
    * @param doctorId 医生ID
    * @return
    */
-  public Integer findDoctorRegCountByDoctorId(String doctorId);
-
-  int receiveOsRegorder(OsRegorder osRegorder);
+  Integer findDoctorRegCountByDoctorId(String doctorId);
 }

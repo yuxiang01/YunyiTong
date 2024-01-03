@@ -123,7 +123,7 @@ import PatentSelected from "@/components/PatentSelected/index.vue";
 import PatientBaseInfo from "@/components/PatientInfo/index.vue";
 import CaseOnline from "@/views/os/patient/caseOnline.vue";
 import Records from "@/views/os/patient/records.vue";
-import {listOrder} from "@/api/os/recipe";
+import {caseListOrder} from "@/api/os/recipe";
 
 export default {
   name: "patientInfo",
@@ -184,7 +184,7 @@ export default {
       })
       listFamilies({"patientId": this.patientId}).then(res => this.tableData = res.rows)
       listPatient().then(res => this.patientList = res.rows)
-      listOrder({patientId: this.patientId}).then(res => this.preList = res.rows)
+      caseListOrder({patientId: this.patientId}).then(res => this.preList = res.rows)
     },
     reset() {
       this.relatedForm = {

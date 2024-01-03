@@ -42,3 +42,10 @@ export function delPatient(patientId) {
     method: 'delete'
   })
 }
+
+export function getAddress() {
+  return request({
+    url: '/data.json',
+    method: 'get'
+  })
+}

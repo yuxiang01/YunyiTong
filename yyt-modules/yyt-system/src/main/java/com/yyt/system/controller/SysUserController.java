@@ -281,7 +281,7 @@ public class SysUserController extends BaseController {
   /**
    * 获取部门树列表
    */
-  @RequiresPermissions("system:user:list")
+  @RequiresPermissions("system:dept:query")
   @GetMapping("/deptTree")
   public AjaxResult deptTree(SysDept dept) {
     return success(deptService.selectDeptTreeList(dept));

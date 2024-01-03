@@ -60,6 +60,9 @@ export default {
         ],
         status: [
           {required: true, message: "就诊状态不能为空", trigger: "change"}
+        ],
+        receTime: [
+          {required: true, message: "预约时间不能为空", trigger: "blur"}
         ]
       },
     };
@@ -103,7 +106,7 @@ export default {
       this.form = {
         regId: null,
         patientId: null,
-        type: null,
+        type: '0',
         orderFee: null,
         deptId: null,
         doctorId: null,
@@ -267,7 +270,7 @@ export default {
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" height="450" :data="regorderList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" height="500" :data="regorderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="挂号单号" align="center" prop="regId"/>
       <el-table-column label="患者" align="center" prop="patient"/>
@@ -278,7 +281,7 @@ export default {
       </el-table-column>
       <el-table-column label="科室" align="center" prop="deptName"/>
       <el-table-column label="接诊医生" align="center" prop="doctor"/>
-      <el-table-column label="就诊时间" align="center" prop="receTime" width="180">
+      <el-table-column label="预约时间" align="center" prop="receTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.receTime) }}</span>
         </template>
@@ -351,12 +354,12 @@ export default {
         <el-form-item label="挂单费用" prop="orderFee">
           <el-input v-model="form.orderFee" readonly placeholder="请先选择接诊医生"/>
         </el-form-item>
-        <el-form-item label="就诊时间" prop="receTime">
+        <el-form-item label="预约时间" prop="receTime">
           <el-date-picker clearable
                           v-model="form.receTime"
                           type="datetime"
                           value-format="yyyy-MM-dd HH:mm:ss"
-                          placeholder="请选择就诊时间">
+                          placeholder="请选择预约时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="就诊状态" prop="status">
