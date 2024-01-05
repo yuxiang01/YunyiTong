@@ -24,7 +24,7 @@ import com.yyt.system.service.ISysOperLogService;
 /**
  * 操作日志记录
  * 
- * @author ruoyi
+ * @author yyt
  */
 @RestController
 @RequestMapping("/operlog")

@@ -1,14 +1,13 @@
 package com.yyt.system.api.factory;
 
-import com.yyt.system.api.model.RegisterWxUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.cloud.openfeign.FallbackFactory;
-import org.springframework.stereotype.Component;
 import com.yyt.common.core.domain.R;
 import com.yyt.system.api.RemoteUserService;
 import com.yyt.system.api.domain.SysUser;
 import com.yyt.system.api.model.LoginUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 用户服务降级处理
@@ -31,21 +30,6 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
       @Override
       public R<Boolean> registerUserInfo(SysUser sysUser, String source) {
         return R.fail("注册用户失败:" + throwable.getMessage());
-      }
-
-      @Override
-      public R<LoginUser> selectUserByOpenId(String code, String source) {
-        return R.fail("该用户不存在: " + throwable.getMessage());
-      }
-
-      @Override
-      public R<LoginUser> wxRegister(RegisterWxUser wxUser, String source) {
-        return R.fail("注册用户失败:" + throwable.getMessage());
-      }
-
-      @Override
-      public R<String> sendCode(String phone, String source) {
-        return R.fail("发送验证码失败:" + throwable.getMessage());
       }
     };
   }

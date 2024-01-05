@@ -1,24 +1,5 @@
 package com.yyt.system.controller;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
-
-import com.yyt.system.api.model.RegisterWxUser;
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.yyt.common.core.domain.R;
 import com.yyt.common.core.utils.StringUtils;
 import com.yyt.common.core.utils.poi.ExcelUtil;
@@ -34,17 +15,23 @@ import com.yyt.system.api.domain.SysDept;
 import com.yyt.system.api.domain.SysRole;
 import com.yyt.system.api.domain.SysUser;
 import com.yyt.system.api.model.LoginUser;
-import com.yyt.system.service.ISysConfigService;
-import com.yyt.system.service.ISysDeptService;
-import com.yyt.system.service.ISysPermissionService;
-import com.yyt.system.service.ISysPostService;
-import com.yyt.system.service.ISysRoleService;
-import com.yyt.system.service.ISysUserService;
+import com.yyt.system.service.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 用户信息
  *
- * @author ruoyi
+ * @author yyt
  */
 @RestController
 @RequestMapping("/user")
@@ -287,20 +274,6 @@ public class SysUserController extends BaseController {
     return success(deptService.selectDeptTreeList(dept));
   }
 
-  /**
-   * 微信用户登录
-   * @param code 临时授权码
-   * @return LoginUser
-   */
-  @InnerAuth
-  @PostMapping("/code/{code}")
-  public R<LoginUser> selectUserByOpenId(@PathVariable String code) {
-    SysUser sysUser = userService.selectUserByOpenId(code);
-    if (StringUtils.isNull(sysUser)) {
-      return R.fail("该用户不存在");
-    }
-    return getLoginUserR(sysUser);
-  }
 
   private R<LoginUser> getLoginUserR(SysUser sysUser) {
     Set<String> roles = permissionService.getRolePermission(sysUser);
@@ -311,22 +284,4 @@ public class SysUserController extends BaseController {
     loginUser.setPermissions(permissions);
     return R.ok(loginUser);
   }
-
-  //注册
-  @InnerAuth
-  @PostMapping("/wx/register")
-  R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser) {
-    SysUser user = userService.register(wxUser);
-    if (StringUtils.isNull(user)) {
-      return R.fail("注册失败");
-    }
-    return getLoginUserR(user);
-  }
-
-  //发送验证码
-  @PostMapping("/sendCode/{phone}")
-  R<String> sendCode(@PathVariable String phone){
-   return R.ok(userService.sendCode(phone));
-  }
-
 }

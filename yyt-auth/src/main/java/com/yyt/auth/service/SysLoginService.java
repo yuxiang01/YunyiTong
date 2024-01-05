@@ -1,6 +1,5 @@
 package com.yyt.auth.service;
 
-import com.yyt.system.api.model.RegisterWxUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.yyt.common.core.constant.CacheConstants;
@@ -124,32 +123,5 @@ public class SysLoginService {
       throw new ServiceException(registerResult.getMsg());
     }
     recordLogService.recordLogininfor(username, Constants.REGISTER, "注册成功");
-  }
-
-  public LoginUser wxLogin(String code) {
-    if (StringUtils.isEmpty(code)) {
-      throw new ServiceException("微信授权码不能为空");
-    }
-    R<LoginUser> sysUser = remoteUserService.selectUserByOpenId(code, SecurityConstants.INNER);
-    if (StringUtils.isNull(sysUser) || StringUtils.isNull(sysUser.getData())) {
-      throw new ServiceException("登录用户不存在");
-    }
-    return sysUser.getData();
-  }
-
-  public LoginUser wxRegister(RegisterWxUser wxUser) {
-    R<LoginUser> wxRegister = remoteUserService.wxRegister(wxUser, SecurityConstants.INNER);
-    if (R.FAIL == wxRegister.getCode()) {
-      throw new ServiceException(wxRegister.getMsg());
-    }
-    return wxRegister.getData();
-  }
-
-  public String sendCode(String phone) {
-    R<String> stringR = remoteUserService.sendCode(phone, SecurityConstants.INNER);
-    if (R.FAIL==stringR.getCode()) {
-      throw new ServiceException(stringR.getMsg());
-    }
-    return stringR.getData();
   }
 }

@@ -1,9 +1,8 @@
 package com.yyt.system.service;
 
-import java.util.List;
-
 import com.yyt.system.api.domain.SysUser;
-import com.yyt.system.api.model.RegisterWxUser;
+
+import java.util.List;
 
 /**
  * 用户 业务层
@@ -204,16 +203,4 @@ public interface ISysUserService {
    * @return 结果
    */
   public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
-
-  /**
-   * 查询openId是否存在
-   *
-   * @param code openId
-   * @return true/false
-   */
-  SysUser selectUserByOpenId(String code);
-
-  SysUser register(RegisterWxUser user);
-
-  String sendCode(String phone);
 }

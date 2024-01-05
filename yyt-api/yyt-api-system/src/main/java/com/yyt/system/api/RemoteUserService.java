@@ -6,7 +6,6 @@ import com.yyt.common.core.domain.R;
 import com.yyt.system.api.domain.SysUser;
 import com.yyt.system.api.factory.RemoteUserFallbackFactory;
 import com.yyt.system.api.model.LoginUser;
-import com.yyt.system.api.model.RegisterWxUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,27 +35,4 @@ public interface RemoteUserService {
    */
   @PostMapping("/user/register")
   public R<Boolean> registerUserInfo(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
-
-  /**
-   * 查询是否存在该用户
-   *
-   * @param code   临时授权码
-   * @param source 请求来源
-   * @return user
-   */
-  @PostMapping("/user/code/{code}")
-  R<LoginUser> selectUserByOpenId(@PathVariable("code") String code, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
-
-  /**
-   * 微信用户注册
-   *
-   * @param wxUser 微信用户注册form
-   * @param source 来源
-   * @return true/false
-   */
-  @PostMapping("/user/wx/register")
-  R<LoginUser> wxRegister(@RequestBody RegisterWxUser wxUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
-
-  @PostMapping("/user/sendCode/{phone}")
-  R<String> sendCode(@PathVariable("phone") String phone, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

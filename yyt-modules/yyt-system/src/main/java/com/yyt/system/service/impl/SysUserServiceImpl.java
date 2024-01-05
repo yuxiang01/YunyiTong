@@ -1,9 +1,5 @@
 package com.yyt.system.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.yyt.common.core.constant.UserConstants;
 import com.yyt.common.core.exception.ServiceException;
 import com.yyt.common.core.utils.SpringUtils;
@@ -13,7 +9,6 @@ import com.yyt.common.datascope.annotation.DataScope;
 import com.yyt.common.security.utils.SecurityUtils;
 import com.yyt.system.api.domain.SysRole;
 import com.yyt.system.api.domain.SysUser;
-import com.yyt.system.api.model.RegisterWxUser;
 import com.yyt.system.domain.SysPost;
 import com.yyt.system.domain.SysUserPost;
 import com.yyt.system.domain.SysUserRole;
@@ -23,18 +18,13 @@ import com.yyt.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import javax.validation.Validator;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -66,15 +56,6 @@ public class SysUserServiceImpl implements ISysUserService {
 
   @Autowired
   protected Validator validator;
-
-  @Value("${wx.app-id}")
-  private String appId;
-
-  @Value("${wx.app-secret}")
-  private String appSecret;
-
-  @Resource
-  private StringRedisTemplate stringRedisTemplate;
 
   /**
    * 根据条件分页查询用户列表
@@ -502,67 +483,6 @@ public class SysUserServiceImpl implements ISysUserService {
       successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
     }
     return successMsg.toString();
-  }
-
-  @Override
-  public SysUser selectUserByOpenId(String code) {
-    return userMapper.selectUserByOpenId(getOpenId(code));
-  }
-
-  // 拿到openid
-  private String getOpenId(String code) {
-    String url = "https://api.weixin.qq.com/sns/jscode2session";
-    HashMap<String, Object> map = new HashMap<>();
-    map.put("appid", appId);
-    map.put("secret", appSecret);
-    map.put("js_code", code);
-    map.put("grant_type", "authorization_code");
-    String response = HttpUtil.post(url, map);
-    JSONObject json = JSONUtil.parseObj(response);
-    String openId = json.getStr("openid");
-    if (openId == null || openId.length() == 0) {
-      throw new RuntimeException("临时登录凭证错误");
-    }
-    return openId;
-  }
-
-  // 注册
-  @Override
-  public SysUser register(RegisterWxUser user) {
-    String openId = getOpenId(user.getCode());
-    // 手机号不存在，允许注册
-    if (!userMapper.checkPhone(user.getPhone())) {
-      // 判断验证码是否正确
-      String cacheCode = stringRedisTemplate.opsForValue().get("user:phone:");
-      if (user.getYzm().equals(cacheCode)) {
-        String sj = "微信用户" + user.getPhone().substring(user.getPhone().length() - 4);
-        SysUser user1 = new SysUser();
-        user1.setUserName(sj);
-        user1.setOpenId(openId);
-        user1.setNickName(sj);
-        user1.setPhonenumber(user.getPhone());
-        // 构建用户
-        return userMapper.insertUser(user1) > 0 ? user1 : null;
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public String sendCode(String phone) {
-    if (!userMapper.checkPhone(phone)) {
-      try {
-//        String sms = WebUtils.sms(phone);
-        String sms = RandomUtil.randomNumbers(4);
-        stringRedisTemplate.opsForValue()
-            .set("user:phone:", sms, 4, TimeUnit.MINUTES);
-        return sms;
-      } catch (Exception e) {
-        System.out.println(e.getMessage() + ", " + e.getCause());
-        return "验证码发送失败";
-      }
-    }
-    return "该用户已存在";
   }
 }
 
